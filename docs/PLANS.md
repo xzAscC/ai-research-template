@@ -10,7 +10,7 @@
 
 ## Done
 
-- [x] [High] Completed task — [exec-plan-link]
+- [x] [High] Add Pipeline Workflow to AGENTS.md — [pipeline-update.md](exec-plans/completed/pipeline-update.md)
 
 ## How to Use
 

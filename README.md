@@ -2,11 +2,9 @@
 
 A Python template optimized for AI-assisted research projects. Designed for experiments, prototypes, and research codebases where AI agents handle implementation.
 
-> **Looking for a general-purpose template?** See [ai-general-template](#) (coming soon).
-
 ## What This Is
 
-This template provides a complete foundation for **research projects** where AI agents (Claude Code, Cursor, Aider, etc.) handle implementation. It emphasizes:
+This template provides a complete foundation for **research projects** where AI agents (Claude Code, Opencode, Aider, etc.) handle implementation. It emphasizes:
 
 - **Rapid experimentation** — Minimal boilerplate, quick iteration cycles
 - **Reproducibility** — Structured documentation for experiments and results
@@ -59,7 +57,7 @@ This template provides a complete foundation for **research projects** where AI 
 │  Review     │◀───│  AI opens   │◀───│  AI codes,  │
 │  results    │    │     PR      │    │  tests,     │
 └─────────────┘    └─────────────┘    │  verifies   │
-       │                               └─────────────┘
+       │                              └─────────────┘
        ▼
 ┌─────────────┐
 │  Document   │───▶ Repeat for next experiment
