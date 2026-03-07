@@ -33,4 +33,4 @@ htmlcov/
 .env.local
 
 # Sisyphus evidence
-.sisyphus/evidence/
+.sisyphus/
