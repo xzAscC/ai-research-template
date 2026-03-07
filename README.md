@@ -1,10 +1,17 @@
-# Agent Engineering Template
+# AI Research Template
 
-A reusable Python template for AI-assisted development workflows.
+A Python template optimized for AI-assisted research projects. Designed for experiments, prototypes, and research codebases where AI agents handle implementation.
+
+> **Looking for a general-purpose template?** See [ai-general-template](#) (coming soon).
 
 ## What This Is
 
-This template provides a complete foundation for projects where AI agents (Claude Code, Cursor, Aider, etc.) handle implementation. It includes documentation structure, tooling configuration, and CI/CD setup optimized for AI-driven development.
+This template provides a complete foundation for **research projects** where AI agents (Claude Code, Cursor, Aider, etc.) handle implementation. It emphasizes:
+
+- **Rapid experimentation** — Minimal boilerplate, quick iteration cycles
+- **Reproducibility** — Structured documentation for experiments and results
+- **AI-friendly structure** — Clear conventions that AI agents understand
+- **Quality tracking** — Built-in quality metrics for research code
 
 ## Quick Start
 
@@ -14,9 +21,9 @@ This template provides a complete foundation for projects where AI agents (Claud
 
 2. **Rename the package**
    ```bash
-   # Replace 'my_project' with your project name
-   find . -type f -name "*.py" -o -name "*.toml" | xargs sed -i 's/my_project/your_project_name/g'
-   mv src/my_project src/your_project_name
+   # Replace 'ai_research_template' with your project name
+   find . -type f -name "*.py" -o -name "*.toml" | xargs sed -i 's/ai_research_template/your_project_name/g'
+   mv src/ai_research_template src/your_project_name
    ```
 
 3. **Install dependencies**
@@ -39,23 +46,24 @@ This template provides a complete foundation for projects where AI agents (Claud
 - **pyproject.toml** — Configured with ruff, mypy, pytest
 - **.github/** — CI workflow, PR template, issue templates
 
-## Workflow
+## Research Workflow
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  You define │───▶│  Write exec │───▶│  AI reads   │
-│    tasks    │    │    plan     │    │    docs     │
+│  Define     │───▶│  Document   │───▶│  AI reads   │
+│  hypothesis │    │  experiment │    │    docs     │
 └─────────────┘    └─────────────┘    └─────────────┘
                                              │
                                              ▼
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   You       │◀───│  AI opens   │◀───│  AI codes,  │
-│   review    │    │     PR      │    │  tests,     │
+│  Review     │◀───│  AI opens   │◀───│  AI codes,  │
+│  results    │    │     PR      │    │  tests,     │
 └─────────────┘    └─────────────┘    │  verifies   │
        │                               └─────────────┘
        ▼
 ┌─────────────┐
-│   Merge     │───▶ Periodic: doc-gardening + refactor + tech debt cleanup
+│  Document   │───▶ Repeat for next experiment
+│  findings   │
 └─────────────┘
 ```
 
@@ -63,32 +71,42 @@ This template provides a complete foundation for projects where AI agents (Claud
 
 ```
 .
-├── AGENTS.md              # AI agent instructions
-├── ARCHITECTURE.md        # System design
-├── README.md              # This file
-├── pyproject.toml         # Project config
-├── .python-version        # Python version
-├── src/my_project/        # Source code
-├── tests/                 # Test files
+├── AGENTS.md                    # AI agent instructions
+├── ARCHITECTURE.md              # System design
+├── README.md                    # This file
+├── pyproject.toml               # Project config
+├── .python-version              # Python version
+├── src/ai_research_template/    # Source code
+├── tests/                       # Test files
 ├── docs/
-│   ├── design-docs/       # Design documents
-│   ├── exec-plans/        # Execution plans
-│   ├── PLANS.md           # Project roadmap
-│   └── QUALITY_SCORE.md   # Quality tracking
+│   ├── design-docs/             # Design documents
+│   ├── exec-plans/              # Execution plans
+│   ├── PLANS.md                 # Project roadmap
+│   └── QUALITY_SCORE.md         # Quality tracking
 └── .github/
-    ├── workflows/ci.yml   # CI pipeline
+    ├── workflows/ci.yml         # CI pipeline
     ├── pull_request_template.md
-    └── ISSUE_TEMPLATE/    # Issue templates
+    └── ISSUE_TEMPLATE/          # Issue templates
 ```
 
 ## Renaming Guide
 
-After cloning, replace all instances of `my_project`:
+After cloning, replace all instances of `ai_research_template`:
 
-1. **pyproject.toml**: Change `name = "my_project"`
-2. **src/my_project/**: Rename directory
-3. **Imports**: Update all `from my_project` imports
+1. **pyproject.toml**: Change `name = "ai_research_template"`
+2. **src/ai_research_template/**: Rename directory
+3. **Imports**: Update all `from ai_research_template` imports
 4. **AGENTS.md**: Update package references
+
+## Research-Specific Features
+
+- **Experiment tracking**: Use `docs/design-docs/` for hypothesis and experiment documentation
+- **Quality metrics**: `docs/QUALITY_SCORE.md` tracks code quality over time
+- **Execution plans**: `docs/exec-plans/` structure your research iterations
+
+## Related Templates
+
+- **ai-general-template** — For general-purpose projects (coming soon)
 
 ## License
 

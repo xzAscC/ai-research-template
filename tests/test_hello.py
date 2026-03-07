@@ -1,4 +1,4 @@
-from my_project.hello import greet
+from ai_research_template.hello import greet
 
 
 def test_greet_returns_greeting() -> None:
