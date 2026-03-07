@@ -2,7 +2,7 @@
 
 <!-- 2-3 sentences describing the changes -->
 
-## Linked Issue
+## Linked Issue (Optional)
 
 Closes #
 
