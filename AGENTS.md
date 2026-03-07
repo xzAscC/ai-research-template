@@ -106,6 +106,7 @@ Enforced by ruff (see pyproject.toml):
 ### Commit Criteria
 
 Commit ONLY when ALL conditions met:
+- `uv sync` completes without errors
 - Logical unit of work complete
 - `uv run ruff check src/ tests/` → 0 violations
 - `uv run ruff format --check src/ tests/` → formatted
