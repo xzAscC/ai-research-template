@@ -6,7 +6,7 @@
 
 ## In Progress
 
-- [ ] [High] Current work item — [exec-plan-link]
+- [ ] [High] Add Pipeline Workflow to AGENTS.md — [pipeline-update.md](exec-plans/active/pipeline-update.md)
 
 ## Done
 
