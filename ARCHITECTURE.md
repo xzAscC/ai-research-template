@@ -27,7 +27,7 @@ This document describes the system architecture for this project.
 
 ```
 .
-├── src/my_project/     # Source code
+├── src/ai_research_template/  # Source code
 │   ├── __init__.py     # Package init
 │   ├── py.typed        # PEP 561 marker
 │   └── *.py            # Modules
