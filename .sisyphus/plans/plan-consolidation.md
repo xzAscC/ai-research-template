@@ -248,7 +248,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 3. Update AGENTS.md References
+- [x] 3. Update AGENTS.md References
 
   **What to do**:
   - Line 98: Change "Read PLAN.md" → "Read .sisyphus/plans/ (active work plan)"
@@ -305,7 +305,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 4. Update ARCHITECTURE.md References
+- [x] 4. Update ARCHITECTURE.md References
 
   **What to do**:
   - Line 37: Change `docs/exec-plans/     # Execution plans` → `.sisyphus/plans/      # Work plans`
@@ -352,7 +352,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 5. Update SPEC.md References
+- [x] 5. Update SPEC.md References
 
   **What to do**:
   - Line 23: Change `docs/exec-plans/` → `.sisyphus/plans/`
@@ -394,7 +394,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 6. Update README.md References
+- [x] 6. Update README.md References
 
   **What to do**:
   - Find and replace all references to `docs/exec-plans/` → `.sisyphus/plans/`
@@ -437,7 +437,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 7. Update TEMPLATE.md References
+- [x] 7. Update TEMPLATE.md References
 
   **What to do**:
   - Line 72: Change `docs/PLANS.md` → `.sisyphus/roadmap.md`
