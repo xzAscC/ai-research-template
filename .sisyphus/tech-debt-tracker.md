@@ -31,10 +31,10 @@ Track technical debt items for periodic cleanup.
 
 ## Resolving Debt
 
-1. Create exec plan in `docs/exec-plans/active/`
+1. Create work plan in `.sisyphus/plans/`
 2. Implement fix
 3. Move entry to **Resolved** section below
-4. Archive exec plan to `docs/exec-plans/completed/`
+4. Archive work plan in `.sisyphus/plans/`
 
 ## Resolved Debt
 
