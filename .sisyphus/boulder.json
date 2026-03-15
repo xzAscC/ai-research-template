@@ -1,10 +1,8 @@
 {
-  "active_plan": "/home/xzascc/Documents/code/ai-research-template/.sisyphus/plans/plan-consolidation.md",
-  "started_at": "2026-03-15T02:28:09.379Z",
-  "session_ids": [
-    "ses_310ba385bffeWC6NKIK5rqczPi"
-  ],
-  "plan_name": "plan-consolidation",
-  "agent": "atlas",
-  "worktree_path": "/home/xzascc/Documents/code/ai-research-template"
+  "active_plan": null,
+  "started_at": null,
+  "session_ids": [],
+  "plan_name": null,
+  "agent": null,
+  "worktree_path": null
 }

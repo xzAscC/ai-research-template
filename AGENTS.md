@@ -99,7 +99,7 @@ Enforced by ruff (see pyproject.toml):
 2. CODE         → Implement following conventions in this file
 3. VERIFY       → Run: ruff check, ruff format, mypy, pytest (ALL must pass)
 4. MOVE PLAN    → Complete → mark completed in .sisyphus/plans/, In-progress → .sisyphus/plans/
-5. UPDATE DOCS  → roadmap.md, QUALITY_SCORE.md, ARCHITECTURE.md as needed
+5. UPDATE DOCS  → .sisyphus/roadmap.md, QUALITY_SCORE.md, ARCHITECTURE.md as needed
 6. COMMIT/PR    → When logical unit complete + all checks pass
 ```
 
