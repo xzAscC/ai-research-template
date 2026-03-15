@@ -1,10 +1,10 @@
 {
-  "active_plan": "/home/xzascc/Documents/code/template_agent/.sisyphus/plans/agent-engineering-template.md",
-  "started_at": "2026-03-07T03:59:11.406Z",
+  "active_plan": "/home/xzascc/Documents/code/ai-research-template/.sisyphus/plans/spec-md-addition.md",
+  "started_at": "2026-03-15T02:01:30.491Z",
   "session_ids": [
-    "ses_3399d84e2ffeedYXX65GE5EsEq"
+    "ses_310d14ab1ffeTOOhRrgChM3VND"
   ],
-  "plan_name": "agent-engineering-template",
+  "plan_name": "spec-md-addition",
   "agent": "atlas",
-  "worktree_path": "/home/xzascc/Documents/code/template_agent"
+  "worktree_path": "/home/xzascc/Documents/code/ai-research-template"
 }
