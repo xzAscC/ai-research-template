@@ -55,10 +55,10 @@ Consolidate all plan-related files into `.sisyphus/` to create a single source o
 - Deleted: PLAN.md, docs/exec-plans/, docs/PLANS.md
 
 ### Definition of Done
-- [ ] All old path references replaced with new paths
-- [ ] New files created in .sisyphus/
-- [ ] Old files deleted
-- [ ] grep returns 0 matches for old paths
+- [x] All old path references replaced with new paths
+- [x] New files created in .sisyphus/
+- [x] Old files deleted
+- [x] grep returns 0 matches for old paths
 
 ### Must Have
 - All references updated (no broken links)
@@ -485,7 +485,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 8. Delete PLAN.md (root)
+- [x] 8. Delete PLAN.md (root)
 
   **What to do**:
   - Use `git rm PLAN.md` to remove the file
@@ -526,7 +526,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 9. Delete docs/exec-plans/ Directory
+- [x] 9. Delete docs/exec-plans/ Directory
 
   **What to do**:
   - Use `git rm -r docs/exec-plans/` to remove entire directory
@@ -581,7 +581,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 10. Delete docs/PLANS.md
+- [x] 10. Delete docs/PLANS.md
 
   **What to do**:
   - This should already be moved (Task 1), but verify and clean up if somehow still exists
@@ -623,7 +623,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 11. Final Verification
+- [x] 11. Final Verification
 
   **What to do**:
   - Run grep to verify zero matches for old paths
@@ -693,11 +693,11 @@ Max Concurrent: 5 (Wave 2)
 
 ## Final Verification Wave (MANDATORY)
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Verify all tasks completed: new files exist, old files deleted, references updated. Check evidence files.
   Output: `Files [N/N] | References [N/N] | Evidence [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Reference Integrity Check** — `quick`
+- [x] F2. **Reference Integrity Check** — `quick`
   Run grep commands to verify zero old references. Check all new references are valid (files exist).
   Output: `Old refs [0] | New refs [N valid] | VERDICT: APPROVE/REJECT`
 
@@ -730,15 +730,15 @@ test ! -d docs/exec-plans && echo "OK"        # Expected: OK
 ```
 
 ### Final Checklist
-- [ ] `.sisyphus/roadmap.md` exists
-- [ ] `.sisyphus/tech-debt-tracker.md` exists with updated self-references
-- [ ] `PLAN.md` deleted
-- [ ] `docs/exec-plans/` deleted
-- [ ] `docs/PLANS.md` deleted
-- [ ] AGENTS.md references updated
-- [ ] ARCHITECTURE.md references updated
-- [ ] SPEC.md references updated
-- [ ] README.md references updated
-- [ ] TEMPLATE.md references updated
-- [ ] All QA scenarios pass
-- [ ] Single commit created
+- [x] `.sisyphus/roadmap.md` exists
+- [x] `.sisyphus/tech-debt-tracker.md` exists with updated self-references
+- [x] `PLAN.md` deleted
+- [x] `docs/exec-plans/` deleted
+- [x] `docs/PLANS.md` deleted
+- [x] AGENTS.md references updated
+- [x] ARCHITECTURE.md references updated
+- [x] SPEC.md references updated
+- [x] README.md references updated
+- [x] TEMPLATE.md references updated
+- [x] All QA scenarios pass
+- [x] Single commit created
