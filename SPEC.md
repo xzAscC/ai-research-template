@@ -20,8 +20,8 @@ A Python template optimized for AI-assisted research projects. Designed for expe
 - `tests/` — Test files mirroring source structure
 - `docs/` — Documentation including:
   - `docs/design-docs/` — Design and experiment documentation
-  - `docs/exec-plans/` — Execution plans for tasks
-  - `docs/PLANS.md` — Project roadmap
+  - `.sisyphus/plans/` — Execution plans for tasks
+  - `.sisyphus/roadmap.md` — Project roadmap
   - `docs/QUALITY_SCORE.md` — Quality tracking metrics
 
 ## 4) Three-Tier Boundaries
