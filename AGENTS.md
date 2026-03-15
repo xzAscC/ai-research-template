@@ -95,11 +95,11 @@ Enforced by ruff (see pyproject.toml):
 **ALWAYS follow this pipeline for every task:**
 
 ```
-1. READ PLAN    → Read PLAN.md, parse tasks, understand requirements
+1. READ PLAN    → Read .sisyphus/plans/ (active work plan), parse tasks, understand requirements
 2. CODE         → Implement following conventions in this file
 3. VERIFY       → Run: ruff check, ruff format, mypy, pytest (ALL must pass)
-4. MOVE PLAN    → Complete → docs/exec-plans/completed/, In-progress → active/
-5. UPDATE DOCS  → PLANS.md, QUALITY_SCORE.md, ARCHITECTURE.md as needed
+4. MOVE PLAN    → Complete → mark completed in .sisyphus/plans/, In-progress → .sisyphus/plans/
+5. UPDATE DOCS  → roadmap.md, QUALITY_SCORE.md, ARCHITECTURE.md as needed
 6. COMMIT/PR    → When logical unit complete + all checks pass
 ```
 
@@ -126,6 +126,6 @@ Open PR when feature complete:
 
 - System design: `ARCHITECTURE.md`
 - Design docs: `docs/design-docs/`
-- Exec plans: `docs/exec-plans/` (active/ for in-progress, completed/ for done)
+- Work plans: `.sisyphus/plans/`
 - Quality tracking: `docs/QUALITY_SCORE.md`
-- Roadmap: `docs/PLANS.md`
+- Roadmap: `.sisyphus/roadmap.md`
