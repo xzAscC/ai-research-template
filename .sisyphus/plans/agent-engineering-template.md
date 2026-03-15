@@ -73,13 +73,13 @@ Create a production-ready Python template repo that enables an AI agent (Claude 
 - **GitHub**: workflows/ci.yml, pull_request_template.md, ISSUE_TEMPLATE/ (config.yml, ai-task.yml, bug-report.yml, feature-request.yml)
 
 ### Definition of Done
-- [ ] `uv sync` completes without errors
-- [ ] `uv run ruff check src/ tests/` → 0 violations
-- [ ] `uv run ruff format --check src/ tests/` → already formatted
-- [ ] `uv run mypy src/` → Success with 0 errors
-- [ ] `uv run pytest` → 1 test passed, 0 failures
-- [ ] All 28 files exist and have non-empty content
-- [ ] AGENTS.md is under 150 lines
+- [x] `uv sync` completes without errors
+- [x] `uv run ruff check src/ tests/` → 0 violations
+- [x] `uv run ruff format --check src/ tests/` → already formatted
+- [x] `uv run mypy src/` → Success with 0 errors
+- [x] `uv run pytest` → 1 test passed, 0 failures
+- [x] All 28 files exist and have non-empty content
+- [x] AGENTS.md is under 150 lines
 
 ### Must Have
 - Working pyproject.toml with uv, ruff, mypy, pytest configs
@@ -191,7 +191,7 @@ Max Concurrent: 8 (Wave 1)
 
 ## TODOs
 
-- [ ] 1. Initialize Python project with uv + pyproject.toml + .python-version
+- [x] 1. Initialize Python project with uv + pyproject.toml + .python-version
 
   **What to do**:
   - Run `uv init` to create the project skeleton OR create `pyproject.toml` manually with proper structure
@@ -288,7 +288,7 @@ Max Concurrent: 8 (Wave 1)
   - Files: `pyproject.toml`, `.python-version`, `uv.lock`
   - Pre-commit: `uv sync`
 
-- [ ] 2. Create Python-specific .gitignore
+- [x] 2. Create Python-specific .gitignore
 
   **What to do**:
   - Create `.gitignore` with comprehensive Python patterns:
@@ -357,7 +357,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `.gitignore`
 
-- [ ] 3. Create AGENTS.md — AI operational policy (<150 lines)
+- [x] 3. Create AGENTS.md — AI operational policy (<150 lines)
 
   **What to do**:
   - Create `AGENTS.md` at project root — this is THE most critical file in the template
@@ -455,7 +455,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `AGENTS.md`
 
-- [ ] 4. Rename and populate ARCHITECTURE.md
+- [x] 4. Rename and populate ARCHITECTURE.md
 
   **What to do**:
   - Rename `architecture.md` (lowercase) to `ARCHITECTURE.md` (uppercase) — use `git mv`
@@ -528,7 +528,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `ARCHITECTURE.md` (renamed from `architecture.md`)
 
-- [ ] 5. Create README.md — template usage guide
+- [x] 5. Create README.md — template usage guide
 
   **What to do**:
   - Create `README.md` with content focused on HOW TO USE THIS TEMPLATE:
@@ -603,7 +603,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `README.md`
 
-- [ ] 6. Create docs/design-docs/ — index.md + core-beliefs.md
+- [x] 6. Create docs/design-docs/ — index.md + core-beliefs.md
 
   **What to do**:
   - Create `docs/design-docs/index.md`:
@@ -673,7 +673,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `docs/design-docs/index.md`, `docs/design-docs/core-beliefs.md`
 
-- [ ] 7. Create docs/PLANS.md + docs/QUALITY_SCORE.md
+- [x] 7. Create docs/PLANS.md + docs/QUALITY_SCORE.md
 
   **What to do**:
   - Create `docs/PLANS.md`:
@@ -757,7 +757,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `docs/PLANS.md`, `docs/QUALITY_SCORE.md`
 
-- [ ] 8. Create docs/exec-plans/ directory structure + tech-debt-tracker.md
+- [x] 8. Create docs/exec-plans/ directory structure + tech-debt-tracker.md
 
   **What to do**:
   - Create directory structure:
@@ -822,7 +822,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: initialize project foundation`
   - Files: `docs/exec-plans/active/.gitkeep`, `docs/exec-plans/completed/.gitkeep`, `docs/exec-plans/tech-debt-tracker.md`
 
-- [ ] 9. Create src/my_project/ package structure
+- [x] 9. Create src/my_project/ package structure
 
   **What to do**:
   - Create `src/my_project/__init__.py`:
@@ -900,7 +900,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: add source scaffold, tests, and GitHub integration`
   - Files: `src/my_project/__init__.py`, `src/my_project/py.typed`, `src/my_project/hello.py`
 
-- [ ] 10. Create tests/ structure with test_hello.py
+- [x] 10. Create tests/ structure with test_hello.py
 
   **What to do**:
   - Create `tests/__init__.py`: Empty file (required for pytest to find tests)
@@ -980,7 +980,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: add source scaffold, tests, and GitHub integration`
   - Files: `tests/__init__.py`, `tests/conftest.py`, `tests/test_hello.py`
 
-- [ ] 11. Create .github/workflows/ci.yml — CI pipeline
+- [x] 11. Create .github/workflows/ci.yml — CI pipeline
 
   **What to do**:
   - Create `.github/workflows/ci.yml` with:
@@ -1060,7 +1060,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: add source scaffold, tests, and GitHub integration`
   - Files: `.github/workflows/ci.yml`
 
-- [ ] 12. Create .github/pull_request_template.md — AI-aware PR template
+- [x] 12. Create .github/pull_request_template.md — AI-aware PR template
 
   **What to do**:
   - Create `.github/pull_request_template.md` with AI-specific sections:
@@ -1160,7 +1160,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: add source scaffold, tests, and GitHub integration`
   - Files: `.github/pull_request_template.md`
 
-- [ ] 13. Create .github/ISSUE_TEMPLATE/ YAML forms
+- [x] 13. Create .github/ISSUE_TEMPLATE/ YAML forms
 
   **What to do**:
   - Create `.github/ISSUE_TEMPLATE/config.yml`:
@@ -1269,7 +1269,7 @@ Max Concurrent: 8 (Wave 1)
   - Message: `feat: add source scaffold, tests, and GitHub integration`
   - Files: `.github/ISSUE_TEMPLATE/config.yml`, `.github/ISSUE_TEMPLATE/ai-task.yml`, `.github/ISSUE_TEMPLATE/bug-report.yml`, `.github/ISSUE_TEMPLATE/feature-request.yml`
 
-- [ ] 14. Full integration verification — run all tools end-to-end
+- [x] 14. Full integration verification — run all tools end-to-end
 
   **What to do**:
   - This is the CRITICAL verification task. Run everything from a clean state:
@@ -1366,19 +1366,19 @@ Max Concurrent: 8 (Wave 1)
 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Rejection → fix → re-run.
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Read the plan end-to-end. For each "Must Have": verify implementation exists (read file, check content). For each "Must NOT Have": search codebase for forbidden patterns — reject with file:line if found. Check evidence files exist in `.sisyphus/evidence/`. Compare deliverables against plan.
   Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
   Run `uv run ruff check src/ tests/` + `uv run mypy src/` + `uv run pytest`. Review all files for: type errors, unused imports, formatting issues. Check AGENTS.md is under 150 lines. Validate all YAML files parse correctly. Check pyproject.toml has all required sections.
   Output: `Ruff [PASS/FAIL] | Mypy [PASS/FAIL] | Pytest [N pass/N fail] | Files [N clean/N issues] | VERDICT`
 
-- [ ] F3. **Real Manual QA** — `unspecified-high`
+- [x] F3. **Real Manual QA** — `unspecified-high`
   Start from clean state (`rm -rf .venv uv.lock && uv sync`). Run EVERY verification command from Definition of Done. Test `uv run ruff check`, `uv run mypy`, `uv run pytest` from scratch. Verify all docs have content. Verify all GitHub YAML files are valid. Save to `.sisyphus/evidence/final-qa/`.
   Output: `DoD Items [N/N pass] | Docs [N/N populated] | YAML [N/N valid] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
   For each task: read "What to do", read actual files. Verify 1:1 — everything in spec was built (no missing), nothing beyond spec was built (no creep). Check "Must NOT do" compliance (no CLAUDE.md, no AI workflow, no deployment configs). Count files: should be exactly 28 created. Flag any unaccounted files.
   Output: `Tasks [N/N compliant] | File Count [N/28] | Scope [CLEAN/N issues] | VERDICT`
 
@@ -1412,9 +1412,9 @@ ls docs/PLANS.md docs/QUALITY_SCORE.md    # Expected: files exist
 ```
 
 ### Final Checklist
-- [ ] All "Must Have" present
-- [ ] All "Must NOT Have" absent
-- [ ] All tools pass (ruff, mypy, pytest)
-- [ ] AGENTS.md under 150 lines
-- [ ] All 28 files created with non-empty content
-- [ ] Template is immediately usable after clone + `uv sync`
+- [x] All "Must Have" present
+- [x] All "Must NOT Have" absent
+- [x] All tools pass (ruff, mypy, pytest)
+- [x] AGENTS.md under 150 lines
+- [x] All 28 files created with non-empty content
+- [x] Template is immediately usable after clone + `uv sync`
