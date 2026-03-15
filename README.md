@@ -78,9 +78,10 @@ This template provides a complete foundation for **research projects** where AI 
 ├── tests/                       # Test files
 ├── docs/
 │   ├── design-docs/             # Design documents
-│   ├── exec-plans/              # Execution plans
-│   ├── PLANS.md                 # Project roadmap
 │   └── QUALITY_SCORE.md         # Quality tracking
+├── .sisyphus/
+│   ├── plans/                   # Execution plans
+│   └── roadmap.md               # Project roadmap
 └── .github/
     ├── workflows/ci.yml         # CI pipeline
     ├── pull_request_template.md
@@ -100,7 +101,7 @@ After cloning, replace all instances of `ai_research_template`:
 
 - **Experiment tracking**: Use `docs/design-docs/` for hypothesis and experiment documentation
 - **Quality metrics**: `docs/QUALITY_SCORE.md` tracks code quality over time
-- **Execution plans**: `docs/exec-plans/` structure your research iterations
+- **Execution plans**: `.sisyphus/plans/` structure your research iterations
 
 ## Related Templates
 
