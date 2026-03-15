@@ -1,5 +1,7 @@
 # Add SPEC.md to AI Research Template
 
+**Status**: ✅ COMPLETED (2026-03-15)
+
 ## TL;DR
 
 > **Quick Summary**: Add a SPEC.md file to the project root following spec-driven development best practices, complementing the existing AGENTS.md with project vision, requirements, and three-tier boundaries.
