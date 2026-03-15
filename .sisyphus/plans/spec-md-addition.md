@@ -52,11 +52,11 @@ Create a SPEC.md file that serves as the project-level specification for the AI 
 - New file: `/SPEC.md` at project root (same level as AGENTS.md)
 
 ### Definition of Done
-- [ ] Branch `feature/add-spec-md` exists and is checked out
-- [ ] SPEC.md file exists at project root
-- [ ] SPEC.md contains: vision, tech stack, structure, three-tier boundaries
-- [ ] SPEC.md style matches AGENTS.md (numbered sections, clear hierarchy)
-- [ ] Commit created with descriptive message
+- [x] Branch `feature/add-spec-md` exists and is checked out
+- [x] SPEC.md file exists at project root
+- [x] SPEC.md contains: vision, tech stack, structure, three-tier boundaries
+- [x] SPEC.md style matches AGENTS.md (numbered sections, clear hierarchy)
+- [x] Commit created with descriptive message
 
 ### Must Have
 - Three-tier boundary system (Always/Ask First/Never)
@@ -302,10 +302,10 @@ grep -E "(Always|Ask first|Never)" SPEC.md  # Expected: 3+ matches
 ```
 
 ### Final Checklist
-- [ ] Branch `feature/add-spec-md` created
-- [ ] SPEC.md exists at project root
-- [ ] Contains brief project vision
-- [ ] Contains three-tier boundaries
-- [ ] No code examples
-- [ ] Style matches AGENTS.md
-- [ ] Changes committed
+- [x] Branch `feature/add-spec-md` created
+- [x] SPEC.md exists at project root
+- [x] Contains brief project vision
+- [x] Contains three-tier boundaries
+- [x] No code examples
+- [x] Style matches AGENTS.md
+- [x] Changes committed
