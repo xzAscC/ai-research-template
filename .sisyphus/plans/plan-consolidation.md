@@ -134,7 +134,7 @@ Max Concurrent: 5 (Wave 2)
 
 ## TODOs
 
-- [ ] 1. Create .sisyphus/roadmap.md
+- [x] 1. Create .sisyphus/roadmap.md
 
   **What to do**:
   - Use `git mv docs/PLANS.md .sisyphus/roadmap.md` to preserve history
@@ -186,7 +186,7 @@ Max Concurrent: 5 (Wave 2)
 
 ---
 
-- [ ] 2. Move tech-debt-tracker.md to .sisyphus/
+- [x] 2. Move tech-debt-tracker.md to .sisyphus/
 
   **What to do**:
   - Use `git mv docs/exec-plans/tech-debt-tracker.md .sisyphus/tech-debt-tracker.md`
