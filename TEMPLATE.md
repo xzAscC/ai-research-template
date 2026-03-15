@@ -69,7 +69,7 @@ uv run pytest
 | `README.md` | Project description, remove template-specific content |
 | `ARCHITECTURE.md` | Your system architecture |
 | `AGENTS.md` | Package references (line 35: `packages = ["YOUR_PROJECT_NAME"]`) |
-| `docs/PLANS.md` | Your project roadmap |
+| `.sisyphus/roadmap.md` | Your project roadmap |
 | `.github/` | Update issue templates if needed |
 
 ## Need Help?

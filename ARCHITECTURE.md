@@ -34,7 +34,7 @@ This document describes the system architecture for this project.
 ├── tests/              # Test files
 ├── docs/               # Documentation
 │   ├── design-docs/    # Design documents
-│   └── exec-plans/     # Execution plans
+│   └── .sisyphus/     # Sisyphus plans & notepads
 └── .github/            # GitHub configs
 ```
 
