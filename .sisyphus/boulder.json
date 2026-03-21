@@ -1,8 +1,20 @@
 {
-  "active_plan": null,
-  "started_at": null,
-  "session_ids": [],
-  "plan_name": null,
-  "agent": null,
-  "worktree_path": null
+  "active_plan": "/home/xzascc/Documents/code/ai-research-template/.sisyphus/plans/notify-module.md",
+  "started_at": "2026-03-21T01:17:55.290Z",
+  "session_ids": [
+    "ses_2f21d03b6ffe6NoN2udfzp9GFF",
+    "ses_2f206d46effeZlG2InHiw6Urgc",
+    "ses_2f20346a5fferpJfBk1eg33i1j",
+    "ses_2f20346c6ffe4tVjIxBy9oPeSD",
+    "ses_2f1ff5b22ffeQNx8I8zj8m3eMl",
+    "ses_2f1ffa491ffeKbYlahwxDMDWkZ",
+    "ses_2f1ff5b3effeWPlKudBNCCPa4I",
+    "ses_2f1fb7f51ffeKLSRpzxT65Sr3H",
+    "ses_2f1f7664affeA9wURV0anTkeX2",
+    "ses_2f1f59ba1ffeBxsoccyydqjFXI",
+    "ses_2f1f3418cffeMEis2fsZu4ikrq",
+    "ses_2f1f34163ffenb5nptEWooZZmr"
+  ],
+  "plan_name": "notify-module",
+  "agent": "atlas"
 }

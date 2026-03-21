@@ -1,0 +1,65 @@
+"""Tests for notify.evidence module - evidence directory scanning."""
+
+import pytest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+from {{ project_name_snake }}.notify.evidence import (
+    scan_evidence_dir,
+    filter_blocked_extensions,
+    prepare_attachments,
+)
+
+
+class TestScanEvidenceDir:
+    """Tests for scan_evidence_dir function."""
+
+    def test_scan_evidence_dir(self, tmp_path: Path) -> None:
+        """Test scanning evidence directory returns valid file paths."""
+        evidence_dir = tmp_path / "evidence"
+        evidence_dir.mkdir()
+        (evidence_dir / "file1.txt").write_text("content1")
+        (evidence_dir / "file2.png").write_bytes(b"\x89PNG")
+        
+        result = scan_evidence_dir(evidence_dir)
+        
+        assert len(result) == 2
+        assert all(isinstance(p, Path) for p in result)
+
+
+class TestFilterBlockedExtensions:
+    """Tests for filter_blocked_extensions function."""
+
+    def test_filter_blocked_extensions(self) -> None:
+        """Test that blocked file extensions are filtered out."""
+        files = [
+            Path("safe.txt"),
+            Path("dangerous.exe"),
+            Path("script.bat"),
+            Path("image.png"),
+            Path("malware.js"),
+        ]
+        
+        result = filter_blocked_extensions(files)
+        
+        assert Path("safe.txt") in result
+        assert Path("image.png") in result
+        assert Path("dangerous.exe") not in result
+        assert Path("script.bat") not in result
+        assert Path("malware.js") not in result
+
+
+class TestPrepareAttachments:
+    """Tests for prepare_attachments function."""
+
+    def test_prepare_attachments(self, tmp_path: Path) -> None:
+        """Test preparing files as Resend-compatible attachments."""
+        test_file = tmp_path / "evidence.txt"
+        test_file.write_text("evidence content")
+        
+        result = prepare_attachments([test_file])
+        
+        assert len(result) == 1
+        assert "filename" in result[0]
+        assert "content" in result[0]
+        assert result[0]["filename"] == "evidence.txt"

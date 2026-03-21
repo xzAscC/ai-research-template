@@ -1,0 +1,47 @@
+name: Validate branch name
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "Branch: $BRANCH_NAME"
+
+          # 正则表达式验证分支名
+          # 允许: main, develop, 或 前缀/描述 格式
+          # 前缀: feature, fix, hotfix, release, docs, refactor, test, chore, ci, perf
+          if [[ ! "$BRANCH_NAME" =~ ^(main|develop|(feature|fix|hotfix|release|docs|refactor|test|chore|ci|perf)/(issue-[0-9]+-)?[a-z0-9][a-z0-9.-]*)$ ]]; then
+            echo ""
+            echo "❌ Invalid branch name: $BRANCH_NAME"
+            echo ""
+            echo "Branch names must follow one of these patterns:"
+            echo "  - main"
+            echo "  - develop"
+            echo "  - feature/<description>"
+            echo "  - fix/<description>"
+            echo "  - hotfix/<description>"
+            echo "  - release/<description> (e.g., release/v1.2.0)"
+            echo "  - docs/<description>"
+            echo "  - refactor/<description>"
+            echo "  - test/<description>"
+            echo "  - chore/<description>"
+            echo "  - ci/<description>"
+            echo "  - perf/<description>"
+            echo ""
+            echo "Examples:"
+            echo "  ✅ feature/add-user-auth"
+            echo "  ✅ fix/login-timeout"
+            echo "  ✅ release/v1.2.0"
+            echo "  ✅ feature/issue-42-add-oauth"
+            echo ""
+            echo "See docs/git-branch-naming.md for details."
+            exit 1
+          fi
+
+          echo "✅ Branch name is valid: $BRANCH_NAME"

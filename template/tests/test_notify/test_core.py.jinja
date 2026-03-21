@@ -1,0 +1,239 @@
+"""Tests for notify.core module - main notification function."""
+
+import os
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
+from resend import exceptions
+
+from {{ project_name_snake }}.notify.core import NotificationError, send_task_notification
+
+
+class TestSendNotificationSuccess:
+    """Tests for successful notification sending."""
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    def test_send_notification_success(self, mock_send: MagicMock) -> None:
+        """Test that notification is sent successfully with valid parameters."""
+        mock_send.return_value = {"id": "email-123"}
+
+        task_name = "test_task"
+        status = "success"
+        logs = ["Line 1", "Line 2"]
+        duration = 1.5
+
+        result = send_task_notification(
+            task_name=task_name,
+            status=status,
+            logs=logs,
+            duration=duration,
+        )
+
+        assert result == "email-123"
+        mock_send.assert_called_once()
+        call_args = mock_send.call_args[0][0]
+        assert call_args["to"] == ["test@example.com"]
+        assert "test_task" in call_args["subject"]
+        assert "success" in call_args["subject"]
+
+
+class TestRetryLogic:
+    """Tests for retry behavior on transient failures."""
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    @patch("{{ project_name_snake }}.notify.core.time.sleep")
+    def test_retry_on_rate_limit_error(
+        self, mock_sleep: MagicMock, mock_send: MagicMock
+    ) -> None:
+        """Test that RateLimitError triggers retry with exponential backoff."""
+        mock_send.side_effect = [
+            exceptions.RateLimitError("Rate limited"),
+            {"id": "email-456"},
+        ]
+
+        result = send_task_notification(
+            task_name="retry_test",
+            status="success",
+            logs=["Line 1"],
+            duration=0.5,
+        )
+
+        assert result == "email-456"
+        assert mock_send.call_count == 2
+        mock_sleep.assert_called_once_with(1)
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    @patch("{{ project_name_snake }}.notify.core.time.sleep")
+    def test_retry_exhausted_raises_notification_error(
+        self, mock_sleep: MagicMock, mock_send: MagicMock
+    ) -> None:
+        """Test that NotificationError is raised after all retries exhausted."""
+        mock_send.side_effect = exceptions.ApplicationError("Server error")
+
+        with pytest.raises(NotificationError) as exc_info:
+            send_task_notification(
+                task_name="retry_test",
+                status="failure",
+                logs=["Error occurred"],
+                duration=0.5,
+            )
+
+        assert "3 attempts" in str(exc_info.value)
+        assert mock_send.call_count == 3
+        assert mock_sleep.call_count == 2
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    def test_no_retry_on_validation_error(self, mock_send: MagicMock) -> None:
+        """Test that ValidationError does not trigger retry."""
+        mock_send.side_effect = exceptions.ValidationError("Invalid request")
+
+        with pytest.raises(NotificationError):
+            send_task_notification(
+                task_name="validation_test",
+                status="success",
+                logs=["Line 1"],
+                duration=0.5,
+            )
+
+        assert mock_send.call_count == 1
+
+
+class TestLogTruncation:
+    """Tests for log truncation functionality."""
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.generate_html_email")
+    @patch("{{ project_name_snake }}.notify.core.generate_text_email")
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    def test_log_truncation(
+        self,
+        mock_send: MagicMock,
+        mock_text_email: MagicMock,
+        mock_html_email: MagicMock,
+    ) -> None:
+        """Test that logs are truncated when exceeding max_log_lines."""
+        mock_send.return_value = {"id": "email-789"}
+        mock_html_email.return_value = "<html></html>"
+        mock_text_email.return_value = "text"
+
+        logs = [f"Log line {i}" for i in range(600)]
+
+        send_task_notification(
+            task_name="truncate_test",
+            status="success",
+            logs=logs,
+            duration=10.0,
+            max_log_lines=500,
+        )
+
+        mock_html_email.assert_called_once()
+        call_kwargs = mock_html_email.call_args[1]
+        assert len(call_kwargs["logs"]) == 500
+        assert call_kwargs["truncated"] is True
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.generate_html_email")
+    @patch("{{ project_name_snake }}.notify.core.generate_text_email")
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    def test_no_truncation_when_under_limit(
+        self,
+        mock_send: MagicMock,
+        mock_text_email: MagicMock,
+        mock_html_email: MagicMock,
+    ) -> None:
+        """Test that logs are not truncated when under max_log_lines."""
+        mock_send.return_value = {"id": "email-789"}
+        mock_html_email.return_value = "<html></html>"
+        mock_text_email.return_value = "text"
+
+        logs = ["Line 1", "Line 2", "Line 3"]
+
+        send_task_notification(
+            task_name="no_truncate_test",
+            status="success",
+            logs=logs,
+            duration=5.0,
+            max_log_lines=500,
+        )
+
+        call_kwargs = mock_html_email.call_args[1]
+        assert len(call_kwargs["logs"]) == 3
+        assert call_kwargs["truncated"] is False
+
+
+class TestEnvironmentValidation:
+    """Tests for environment variable validation."""
+
+    def test_missing_api_key_raises_error(self) -> None:
+        """Test that missing RESEND_API_KEY raises NotificationError."""
+        with patch.dict(os.environ, {}, clear=True):
+            with pytest.raises(NotificationError) as exc_info:
+                send_task_notification(
+                    task_name="test",
+                    status="success",
+                    logs=[],
+                    duration=1.0,
+                )
+            assert "RESEND_API_KEY" in str(exc_info.value)
+
+    @patch.dict(os.environ, {"RESEND_API_KEY": "test-key"}, clear=True)
+    def test_missing_notification_email_raises_error(self) -> None:
+        """Test that missing NOTIFICATION_EMAIL raises NotificationError."""
+        with pytest.raises(NotificationError) as exc_info:
+            send_task_notification(
+                task_name="test",
+                status="success",
+                logs=[],
+                duration=1.0,
+            )
+        assert "NOTIFICATION_EMAIL" in str(exc_info.value)
+
+
+class TestEvidenceHandling:
+    """Tests for evidence directory handling."""
+
+    @patch.dict(
+        os.environ,
+        {"RESEND_API_KEY": "test-api-key", "NOTIFICATION_EMAIL": "test@example.com"},
+    )
+    @patch("{{ project_name_snake }}.notify.core.resend.Emails.send")
+    def test_evidence_dir_not_found_logs_warning(
+        self, mock_send: MagicMock, tmp_path: Path
+    ) -> None:
+        """Test that missing evidence directory logs warning but continues."""
+        mock_send.return_value = {"id": "email-100"}
+        non_existent_dir = tmp_path / "non_existent"
+
+        result = send_task_notification(
+            task_name="test",
+            status="success",
+            logs=["Line 1"],
+            duration=1.0,
+            evidence_dir=non_existent_dir,
+        )
+
+        assert result == "email-100"
+        mock_send.assert_called_once()
