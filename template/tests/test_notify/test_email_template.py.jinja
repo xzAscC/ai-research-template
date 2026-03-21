@@ -1,0 +1,67 @@
+"""Tests for notify.email_template module - HTML email generation."""
+
+import pytest
+from unittest.mock import MagicMock, patch
+
+from {{ project_name_snake }}.notify.email_template import (
+    generate_html_email,
+    generate_text_email,
+    format_duration,
+)
+
+
+class TestHtmlEscape:
+    """Tests for HTML escaping in email templates."""
+
+    def test_html_escape(self) -> None:
+        """Test that user content is properly HTML escaped."""
+        task_name = "<script>alert('xss')</script>"
+        logs = ["<b>Bold</b> log"]
+        
+        html = generate_html_email(
+            task_name=task_name,
+            status="success",
+            logs=logs,
+            duration=1.0,
+            truncated=False,
+        )
+        
+        # Dangerous content should be escaped
+        assert "&lt;script&gt;" in html
+        assert "<script>" not in html
+
+
+class TestFormatDuration:
+    """Tests for format_duration function."""
+
+    def test_format_duration(self) -> None:
+        """Test duration formatting to human-readable format."""
+        # Test seconds only
+        assert format_duration(45.0) == "45s"
+        
+        # Test minutes and seconds
+        assert format_duration(125.0) == "2m 5s"
+        
+        # Test hours, minutes, seconds
+        assert format_duration(3661.0) == "1h 1m 1s"
+
+
+class TestHtmlStructure:
+    """Tests for HTML structure and styling."""
+
+    def test_html_structure(self) -> None:
+        """Test that generated HTML has proper structure with inline CSS."""
+        html = generate_html_email(
+            task_name="test_task",
+            status="success",
+            logs=["Log line 1"],
+            duration=1.5,
+            truncated=False,
+        )
+        
+        # Should have basic HTML structure
+        assert "<!DOCTYPE html>" in html or "<html" in html
+        # Should use inline CSS (style attributes)
+        assert 'style="' in html or "style:" in html
+        # Should contain task name (escaped)
+        assert "test_task" in html

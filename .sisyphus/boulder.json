@@ -1,25 +1,20 @@
 {
-  "active_plan": "/home/xzascc/Documents/code/ai-research-template/.sisyphus/plans/copier-template-conversion.md",
-  "started_at": "2026-03-21T00:15:34.969Z",
+  "active_plan": "/home/xzascc/Documents/code/ai-research-template/.sisyphus/plans/notify-module.md",
+  "started_at": "2026-03-21T01:17:55.290Z",
   "session_ids": [
-    "ses_2f25474f0ffeYjjIlF5s6oQmTC",
-    "ses_2f23d507fffe5Sch9oOVyK7Jou",
-    "ses_2f23c28e1ffeQuv2DlcxfJbMAd",
-    "ses_2f23b53abffelFcpssvyYK1ngQ",
-    "ses_2f23b1fb9ffe5wIR1KzUf1v3x1",
-    "ses_2f23b054effemSZGtWqVPet5D8",
-    "ses_2f23b34daffehsDrS2jYnYyhPM",
-    "ses_2f23aeb34ffenO26SlXOfAvzxb",
-    "ses_2f2398653ffeBOFh35zm9Pp9w3",
-    "ses_2f239745effemZyI5JOrGC9RBX",
-    "ses_2f2393f7dffenYMd1adcBB8NfY",
-    "ses_2f2396237ffeu5qc16WlAKT2yx",
-    "ses_2f2399802ffe9w7ysmlwDyM0Vb",
-    "ses_2f237bba0ffexfLyT1I2zI9iVp",
-    "ses_2f235dc49ffePwbZ5SnMqpcAHD",
-    "ses_2f23398d3ffeBRznHyohj4wRZq"
+    "ses_2f21d03b6ffe6NoN2udfzp9GFF",
+    "ses_2f206d46effeZlG2InHiw6Urgc",
+    "ses_2f20346a5fferpJfBk1eg33i1j",
+    "ses_2f20346c6ffe4tVjIxBy9oPeSD",
+    "ses_2f1ff5b22ffeQNx8I8zj8m3eMl",
+    "ses_2f1ffa491ffeKbYlahwxDMDWkZ",
+    "ses_2f1ff5b3effeWPlKudBNCCPa4I",
+    "ses_2f1fb7f51ffeKLSRpzxT65Sr3H",
+    "ses_2f1f7664affeA9wURV0anTkeX2",
+    "ses_2f1f59ba1ffeBxsoccyydqjFXI",
+    "ses_2f1f3418cffeMEis2fsZu4ikrq",
+    "ses_2f1f34163ffenb5nptEWooZZmr"
   ],
-  "plan_name": "copier-template-conversion",
-  "current_wave": 1,
-  "current_task": 1
+  "plan_name": "notify-module",
+  "agent": "atlas"
 }
