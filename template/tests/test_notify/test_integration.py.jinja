@@ -1,0 +1,99 @@
+"""
+Integration tests for notify module.
+
+These tests require real API credentials and are skipped by default.
+
+To run integration tests:
+    # Set environment variables
+    export RESEND_API_KEY="re_your_api_key"
+    export NOTIFICATION_EMAIL="your-email@example.com"
+    
+    # Run with integration marker
+    uv run pytest tests/test_notify/test_integration.py -m integration -v
+"""
+
+import os
+from pathlib import Path
+
+import pytest
+
+from {{ project_name_snake }}.notify import (
+    EvidenceDirNotFoundError,
+    NotificationError,
+    send_task_notification,
+)
+
+
+@pytest.mark.integration
+class TestIntegration:
+    """Integration tests that send real emails."""
+
+    @pytest.fixture(autouse=True)
+    def check_env(self) -> None:
+        """Skip tests if environment variables not set."""
+        if not os.environ.get("RESEND_API_KEY"):
+            pytest.skip("RESEND_API_KEY not set")
+        if not os.environ.get("NOTIFICATION_EMAIL"):
+            pytest.skip("NOTIFICATION_EMAIL not set")
+
+    def test_send_success_with_evidence(self, tmp_path: Path) -> None:
+        """Test sending notification with evidence files."""
+        # Create evidence files
+        evidence_dir = tmp_path / "evidence"
+        evidence_dir.mkdir()
+        (evidence_dir / "log.txt").write_text("Test evidence")
+
+        # Send notification
+        result = send_task_notification(
+            task_name="integration_test",
+            status="success",
+            logs=["Test log line 1", "Test log line 2"],
+            duration=1.5,
+            evidence_dir=evidence_dir,
+        )
+
+        assert result is not None
+        assert isinstance(result, str)
+
+    def test_send_failure_notification(self) -> None:
+        """Test sending failure notification."""
+        result = send_task_notification(
+            task_name="failing_task",
+            status="failure",
+            logs=["Error: something went wrong"],
+            duration=0.5,
+        )
+
+        assert result is not None
+
+    def test_send_with_multiple_evidence_files(self, tmp_path: Path) -> None:
+        """Test sending notification with multiple evidence files."""
+        # Create evidence directory with multiple files
+        evidence_dir = tmp_path / "evidence"
+        evidence_dir.mkdir()
+        (evidence_dir / "output.log").write_text("Log output content")
+        (evidence_dir / "results.json").write_text('{"status": "ok"}')
+        (evidence_dir / "screenshot.png").write_bytes(b"\x89PNG fake png data")
+
+        result = send_task_notification(
+            task_name="multi_evidence_test",
+            status="success",
+            logs=["Processing complete"],
+            duration=2.5,
+            evidence_dir=evidence_dir,
+        )
+
+        assert result is not None
+
+    def test_send_long_running_task(self) -> None:
+        """Test sending notification for a long-running task with many logs."""
+        logs = [f"Processing item {i}" for i in range(100)]
+
+        result = send_task_notification(
+            task_name="long_task",
+            status="success",
+            logs=logs,
+            duration=3600.5,  # ~1 hour
+        )
+
+        assert result is not None

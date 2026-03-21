@@ -1,0 +1,44 @@
+"""Tests for notify.redact module - sensitive data filtering."""
+
+import pytest
+from unittest.mock import MagicMock, patch
+
+from {{ project_name_snake }}.notify.redact import redact_sensitive
+
+
+class TestRedactApiKey:
+    """Tests for API key redaction."""
+
+    def test_redact_api_key(self) -> None:
+        """Test that API keys are properly redacted."""
+        text = "Using API key sk-abc123def456 for authentication"
+        
+        result = redact_sensitive(text)
+        
+        assert "sk-abc123def456" not in result
+        assert "[REDACTED]" in result
+
+
+class TestRedactPassword:
+    """Tests for password redaction."""
+
+    def test_redact_password(self) -> None:
+        """Test that passwords are properly redacted."""
+        text = "Connecting with password=secret123 to database"
+        
+        result = redact_sensitive(text)
+        
+        assert "secret123" not in result
+        assert "[REDACTED]" in result
+
+
+class TestRedactToken:
+    """Tests for token redaction."""
+
+    def test_redact_token(self) -> None:
+        """Test that authentication tokens are properly redacted."""
+        text = "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        
+        result = redact_sensitive(text)
+        
+        assert "[REDACTED]" in result
