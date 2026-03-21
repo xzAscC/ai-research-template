@@ -1,112 +1,77 @@
 # AI Research Template
 
-A Python template optimized for AI-assisted research projects. Designed for experiments, prototypes, and research codebases where AI agents handle implementation.
-
-## What This Is
-
-This template provides a complete foundation for **research projects** where AI agents (Claude Code, Opencode, Aider, etc.) handle implementation. It emphasizes:
-
-- **Rapid experimentation** — Minimal boilerplate, quick iteration cycles
-- **Reproducibility** — Structured documentation for experiments and results
-- **AI-friendly structure** — Clear conventions that AI agents understand
-- **Quality tracking** — Built-in quality metrics for research code
+A Copier template for creating new AI research Python projects with best practices built-in.
 
 ## Quick Start
 
-1. **Use this template**
-   - Click "Use this template" on GitHub, or
-   - Clone: `git clone <repo-url>`
-
-2. **Rename the package**
-   ```bash
-   # Replace 'ai_research_template' with your project name
-   find . -type f -name "*.py" -o -name "*.toml" | xargs sed -i 's/ai_research_template/your_project_name/g'
-   mv src/ai_research_template src/your_project_name
-   ```
-
-3. **Install dependencies**
-   ```bash
-   uv sync
-   ```
-
-4. **Verify everything works**
-   ```bash
-   uv run ruff check src/ tests/
-   uv run mypy src/
-   uv run pytest
-   ```
-
-## What's Included
-
-- **AGENTS.md** — AI agent operational policy (commands, escalation rules)
-- **ARCHITECTURE.md** — System design template
-- **docs/** — Documentation structure (design-docs, exec-plans, quality tracking)
-- **pyproject.toml** — Configured with ruff, mypy, pytest
-- **.github/** — CI workflow, PR template, issue templates
-
-## Research Workflow
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  Define     │───▶│  Document   │───▶│  AI reads   │
-│  hypothesis │    │  experiment │    │    docs     │
-└─────────────┘    └─────────────┘    └─────────────┘
-                                             │
-                                             ▼
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  Review     │◀───│  AI opens   │◀───│  AI codes,  │
-│  results    │    │     PR      │    │  tests,     │
-└─────────────┘    └─────────────┘    │  verifies   │
-       │                              └─────────────┘
-       ▼
-┌─────────────┐
-│  Document   │───▶ Repeat for next experiment
-│  findings   │
-└─────────────┘
+```bash
+# Create a new project from this template
+copier copy --trust https://github.com/your-org/ai-research-template.git ./my-new-project
 ```
 
-## File Structure
+> **Note:** The `--trust` flag is required because this template includes post-generation tasks that initialize git, sync dependencies with `uv`, and run tests.
 
-```
-.
-├── AGENTS.md                    # AI agent instructions
-├── ARCHITECTURE.md              # System design
-├── README.md                    # This file
-├── pyproject.toml               # Project config
-├── .python-version              # Python version
-├── src/ai_research_template/    # Source code
-├── tests/                       # Test files
-├── docs/
-│   ├── design-docs/             # Design documents
-│   └── QUALITY_SCORE.md         # Quality tracking
-├── .sisyphus/
-│   ├── plans/                   # Execution plans
-│   └── roadmap.md               # Project roadmap
-└── .github/
-    ├── workflows/ci.yml         # CI pipeline
-    ├── pull_request_template.md
-    └── ISSUE_TEMPLATE/          # Issue templates
+## Usage
+
+### Create a New Project
+
+```bash
+copier copy --trust https://github.com/your-org/ai-research-template.git ./your-project-name
 ```
 
-## Renaming Guide
+### Update an Existing Project
 
-After cloning, replace all instances of `ai_research_template`:
+If you've already generated a project from this template, you can update it when the template changes:
 
-1. **pyproject.toml**: Change `name = "ai_research_template"`
-2. **src/ai_research_template/**: Rename directory
-3. **Imports**: Update all `from ai_research_template` imports
-4. **AGENTS.md**: Update package references
+```bash
+cd your-project
+copier update --trust
+```
 
-## Research-Specific Features
+This preserves your customizations while applying template updates.
 
-- **Experiment tracking**: Use `docs/design-docs/` for hypothesis and experiment documentation
-- **Quality metrics**: `docs/QUALITY_SCORE.md` tracks code quality over time
-- **Execution plans**: `.sisyphus/plans/` structure your research iterations
+## Available Prompts
 
-## Related Templates
+When you run `copier copy`, you'll be prompted for the following values:
 
-- **ai-general-template** — For general-purpose projects (coming soon)
+| Prompt | Type | Description | Default |
+|--------|------|-------------|---------|
+| `project_name` | string | Your project name in `snake_case` (used for Python package naming) | `my_project` |
+| `project_description` | string | Brief description of your project | `A Python project` |
+| `author_name` | string | Your full name (used in LICENSE and `pyproject.toml`) | `Your Name` |
+| `author_email` | string | Your email address (used in `pyproject.toml`) | `your.email@example.com` |
+| `include_template_docs` | bool | Whether to include `TEMPLATE.md` in the generated project | `false` |
+
+### Project Name Validation
+
+The `project_name` must:
+- Start with a lowercase letter
+- Contain only lowercase letters, numbers, and underscores
+
+Valid examples: `my_project`, `ai_research_2024`, `data_processor`
+
+## Post-Generation Tasks
+
+After project generation, the following tasks run automatically:
+
+1. **Git initialization** — `git init`
+2. **Dependency sync** — `uv sync`
+3. **Test verification** — `uv run pytest`
+
+These tasks require the `--trust` flag since they execute code on your system.
+
+## Requirements
+
+- [Copier](https://copier.readthedocs.io/) >= 9.0.0
+- [uv](https://docs.astral.sh/uv/) (for post-generation tasks)
+- Git
+
+## Links
+
+- [Copier Documentation](https://copier.readthedocs.io/en/stable/)
+- [Copier Creating Templates Guide](https://copier.readthedocs.io/en/stable/creating/)
+- [uv Documentation](https://docs.astral.sh/uv/)
 
 ## License
 
-[Add your license here]
+MIT

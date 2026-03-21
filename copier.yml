@@ -1,0 +1,90 @@
+# Copier Template Configuration
+# https://copier.readthedocs.io/en/stable/configuring/
+
+_min_copier_version: "9.0.0"
+_subdirectory: template
+_templates_suffix: .jinja
+_answers_file: .copier-answers.yml
+
+# ============================================
+# USER PROMPTS
+# ============================================
+
+project_name:
+  type: str
+  help: What is your project name? (use snake_case for Python packages)
+  default: my_project
+  validator: >-
+    {% if not (project_name | regex_search('^[a-z][a-z0-9_]*$')) %}
+    Project name must start with a lowercase letter and contain only lowercase letters, numbers, and underscores.
+    {% endif %}
+
+project_description:
+  type: str
+  help: Brief description of your project
+  default: A Python project
+
+author_name:
+  type: str
+  help: Your full name (for LICENSE and pyproject.toml)
+  default: Your Name
+
+author_email:
+  type: str
+  help: Your email address (for pyproject.toml)
+  default: your.email@example.com
+
+include_template_docs:
+  type: bool
+  help: Include TEMPLATE.md in the generated project?
+  default: false
+
+# ============================================
+# COMPUTED VALUES (not prompted)
+# ============================================
+
+project_slug:
+  when: false
+  default: "{{ project_name | lower | replace('_', '-') }}"
+
+project_name_snake:
+  when: false
+  default: "{{ project_name | lower | replace('-', '_') }}"
+
+project_display_name:
+  when: false
+  default: "{{ project_name | replace('_', ' ') | replace('-', ' ') | title }}"
+
+copyright_year:
+  when: false
+  default: "{{ current_year }}"
+
+# ============================================
+# EXCLUSIONS
+# ============================================
+
+_exclude:
+  - "copier.yml"
+  - "copier.yaml"
+  - ".git"
+  - ".gitignore"
+  - ".DS_Store"
+  - "*.py[co]"
+  - "__pycache__"
+  - ".python-version"
+  # Sisyphus-specific files (keep .sisyphus/answers.json for reproducibility)
+  - ".sisyphus/drafts/"
+  - ".sisyphus/plans/"
+  - ".sisyphus/notepads/"
+  - ".sisyphus/boulder.json"
+  # Template-specific docs (unless include_template_docs is true)
+  - "{% if not include_template_docs %}TEMPLATE.md{% endif %}"
+
+# ============================================
+# POST-GENERATION TASKS
+# ============================================
+
+_tasks:
+  - ["git", "init"]
+  - ["uv", "sync"]
+  - ["uv", "run", "pytest"]
