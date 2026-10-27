@@ -34,11 +34,6 @@ author_email:
   help: Your email address (for pyproject.toml)
   default: your.email@example.com
 
-include_template_docs:
-  type: bool
-  help: Include TEMPLATE.md in the generated project?
-  default: false
-
 # ============================================
 # COMPUTED VALUES (not prompted)
 # ============================================
@@ -57,7 +52,8 @@ project_display_name:
 
 copyright_year:
   when: false
-  default: "{{ current_year }}"
+  # strftime comes from jinja2-ansible-filters, which Copier loads by default
+  default: "{{ '%Y' | strftime }}"
 
 # ============================================
 # EXCLUSIONS
@@ -67,13 +63,14 @@ _exclude:
   - "copier.yml"
   - "copier.yaml"
   - ".git"
-  - ".gitignore"
   - ".DS_Store"
   - "*.py[co]"
   - "__pycache__"
-  - ".python-version"
-  # Template-specific docs (unless include_template_docs is true)
-  - "{% if not include_template_docs %}TEMPLATE.md{% endif %}"
+
+# Private files the project fills in; `copier update` leaves them alone.
+_skip_if_exists:
+  - "AGENTS.local.md"
+  - "CLAUDE.local.md"
 
 # ============================================
 # POST-GENERATION TASKS

@@ -1,155 +1,141 @@
-"""Tests for Copier template generation using pytest-copie."""
+"""Tests for Copier template generation using pytest-copie.
 
+Each copy also runs the template's tasks (git init, uv sync, uv run pytest), so a
+successful copy means the generated project's own tests pass.
+"""
+
+import subprocess
 from pathlib import Path
 
+import pytest
 
-def test_template_generates_successfully(copie):
-    """Test that the template generates without errors."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "test_project",
-            "project_description": "A test project",
-            "author_name": "Test Author",
-            "author_email": "test@example.com",
-            "include_template_docs": False,
-        }
-    )
+ANSWERS = {
+    "project_name": "test_project",
+    "project_description": "My custom description",
+    "author_name": "Jane Doe",
+    "author_email": "jane@example.com",
+}
 
+TEXT_SUFFIXES = {".py", ".toml", ".md", ".yml", ".yaml", ".txt", ".example", ""}
+
+
+@pytest.fixture(scope="session")
+def project(copie_session) -> Path:
+    result = copie_session.copy(extra_answers=ANSWERS)
+    assert result.exception is None, result.exception
     assert result.exit_code == 0
-    assert result.project_dir is not None
-    assert result.exception is None
+    return result.project_dir
 
 
-def test_pyproject_toml_exists(copie):
-    """Test that pyproject.toml is generated in the project."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "test_project",
-            "project_description": "A test project",
-            "author_name": "Test Author",
-            "author_email": "test@example.com",
-            "include_template_docs": False,
-        }
+def _text_files(project_dir: Path) -> list[Path]:
+    skip = {".git", ".venv", ".pytest_cache", ".ruff_cache", "__pycache__"}
+    return [
+        path
+        for path in project_dir.rglob("*")
+        if path.is_file()
+        and not skip & set(path.relative_to(project_dir).parts)
+        and path.suffix in TEXT_SUFFIXES
+    ]
+
+
+def test_expected_files_exist(project: Path) -> None:
+    for name in [
+        "README.md",
+        "SPEC.md",
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "AGENTS.local.md",
+        "CLAUDE.local.md",
+        "REVIEW.md",
+        "LICENSE",
+        "pyproject.toml",
+        ".python-version",
+        ".gitignore",
+        ".env.example",
+        ".copier-answers.yml",
+        ".github/workflows/ci.yml",
+        "src/test_project/__init__.py",
+        "src/test_project/notify.py",
+        "tests/test_notify.py",
+    ]:
+        assert (project / name).is_file(), name
+
+
+def test_folders_are_kept_by_gitkeep(project: Path) -> None:
+    for folder in [
+        "configs",
+        "scripts",
+        "data",
+        "logs",
+        "results",
+        "figs",
+        "checkpoints",
+        "notebooks",
+    ]:
+        assert (project / folder / ".gitkeep").is_file(), folder
+
+
+def test_removed_files_are_gone(project: Path) -> None:
+    for name in [
+        "docs",
+        "TEMPLATE.md",
+        ".github/ISSUE_TEMPLATE",
+        "test_project",
+        "src/test_project/hello.py",
+    ]:
+        assert not (project / name).exists(), name
+
+
+def test_placeholders_replaced(project: Path) -> None:
+    for path in _text_files(project):
+        content = path.read_text(errors="ignore")
+        assert "{{" not in content and "}}" not in content, path
+        assert "ai_research_template" not in content.lower(), path
+
+
+def test_pyproject_uses_answers(project: Path) -> None:
+    content = (project / "pyproject.toml").read_text()
+    assert 'name = "test_project"' in content
+    assert "My custom description" in content
+    assert "Jane Doe" in content
+    assert "jane@example.com" in content
+    assert 'requires-python = ">=3.13"' in content
+    assert (project / ".python-version").read_text().strip() == "3.13"
+
+
+def test_license_has_author_and_year(project: Path) -> None:
+    content = (project / "LICENSE").read_text()
+    assert "Jane Doe" in content
+    assert "Copyright (c) 20" in content
+
+
+def test_private_files_and_outputs_are_ignored(project: Path) -> None:
+    for path in [
+        "AGENTS.local.md",
+        "CLAUDE.local.md",
+        ".env",
+        "results/x.json",
+        "logs/x/run.log",
+        "figs/x.pdf",
+    ]:
+        check = subprocess.run(["git", "check-ignore", "-q", path], check=False, cwd=project)
+        assert check.returncode == 0, f"{path} is not ignored"
+    for path in ["AGENTS.md", ".env.example", "results/.gitkeep", "configs/exp1.yaml"]:
+        check = subprocess.run(["git", "check-ignore", "-q", path], check=False, cwd=project)
+        assert check.returncode == 1, f"{path} is ignored"
+
+
+def test_generated_project_passes_ruff(project: Path) -> None:
+    check = subprocess.run(
+        ["uv", "run", "ruff", "check"], check=False, cwd=project, capture_output=True, text=True
     )
-
-    project_dir: Path = result.project_dir
-    pyproject_path = project_dir / "pyproject.toml"
-
-    assert pyproject_path.exists()
-    assert pyproject_path.is_file()
+    assert check.returncode == 0, check.stdout + check.stderr
 
 
-def test_placeholders_replaced(copie):
-    """Test that all placeholders are replaced in generated files."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "test_project",
-            "project_description": "A test project",
-            "author_name": "Test Author",
-            "author_email": "test@example.com",
-            "include_template_docs": False,
-        }
-    )
+def test_project_name_used_correctly(copie) -> None:
+    result = copie.copy(extra_answers={**ANSWERS, "project_name": "my_awesome_project"})
+    assert result.exit_code == 0, result.exception
 
-    project_dir: Path = result.project_dir
-
-    # Check pyproject.toml has no template markers
-    pyproject_path = project_dir / "pyproject.toml"
-    pyproject_content = pyproject_path.read_text()
-
-    assert "{{" not in pyproject_content
-    assert "}}" not in pyproject_content
-
-
-def test_no_template_name_in_generated_files(copie):
-    """Test that no 'ai_research_template' references remain in generated files."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "test_project",
-            "project_description": "A test project",
-            "author_name": "Test Author",
-            "author_email": "test@example.com",
-            "include_template_docs": False,
-        }
-    )
-
-    project_dir: Path = result.project_dir
-
-    # Check all text files for template name references
-    for file_path in project_dir.rglob("*"):
-        if file_path.is_file() and file_path.suffix in {
-            ".py",
-            ".toml",
-            ".md",
-            ".yml",
-            ".yaml",
-            ".txt",
-        }:
-            content = file_path.read_text(errors="ignore")
-            assert "ai_research_template" not in content.lower(), (
-                f"Found 'ai_research_template' in {file_path}"
-            )
-
-
-def test_project_structure(copie):
-    """Test that the generated project has the expected structure."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "test_project",
-            "project_description": "A test project",
-            "author_name": "Test Author",
-            "author_email": "test@example.com",
-            "include_template_docs": False,
-        }
-    )
-
-    project_dir: Path = result.project_dir
-
-    # Check expected directories exist
-    assert (project_dir / "test_project").is_dir()
-    assert (project_dir / "tests").is_dir()
-    assert (project_dir / "docs").is_dir()
-
-    # Check key files exist
-    assert (project_dir / "pyproject.toml").exists()
-    assert (project_dir / "README.md").exists()
-    assert (project_dir / "LICENSE").exists()
-
-
-def test_project_name_used_correctly(copie):
-    """Test that project_name is properly used in generated files."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "my_awesome_project",
-            "project_description": "A test project",
-            "author_name": "Test Author",
-            "author_email": "test@example.com",
-            "include_template_docs": False,
-        }
-    )
-
-    project_dir: Path = result.project_dir
-
-    # Check package directory is named correctly
-    assert (project_dir / "my_awesome_project").is_dir()
-
-    # Check pyproject.toml uses snake_case name
-    pyproject_content = (project_dir / "pyproject.toml").read_text()
-    assert 'name = "my_awesome_project"' in pyproject_content
-
-
-def test_author_info_in_pyproject(copie):
-    """Test that author information is correctly placed in pyproject.toml."""
-    result = copie.copy(
-        extra_answers={
-            "project_name": "test_project",
-            "project_description": "My custom description",
-            "author_name": "Jane Doe",
-            "author_email": "jane@example.com",
-            "include_template_docs": False,
-        }
-    )
-
-    pyproject_content = (result.project_dir / "pyproject.toml").read_text()
-
-    assert "My custom description" in pyproject_content
+    assert (result.project_dir / "src" / "my_awesome_project" / "notify.py").is_file()
+    assert 'name = "my_awesome_project"' in (result.project_dir / "pyproject.toml").read_text()
+    assert "my_awesome_project" in (result.project_dir / "AGENTS.md").read_text()
