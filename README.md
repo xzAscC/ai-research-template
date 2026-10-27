@@ -88,7 +88,8 @@ These tasks require the `--trust` flag since they execute code on your system.
 
 ## Requirements
 
-- [Copier](https://copier.readthedocs.io/) >= 9.0.0
+- Linux or macOS (the tasks run in a POSIX shell, and `notify.py` checks file owners)
+- [Copier](https://copier.readthedocs.io/) >= 9.6.0
 - [uv](https://docs.astral.sh/uv/) (for post-generation tasks)
 - Git
 

@@ -78,7 +78,8 @@ def _load_dotenv(path: Path | None = None) -> dict[str, str]:
         return {}
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
-    except OSError:
+    except (OSError, UnicodeDecodeError) as exc:
+        print(f"[notify] cannot read {path}: {exc}", file=sys.stderr)
         return {}
     values: dict[str, str] = {}
     for line in lines:
@@ -135,8 +136,11 @@ def send_email(subject: str, body: str, *, to: list[str] | None = None) -> None:
             server.login(user, password)
             stage = "send"
             server.send_message(msg)
+    except (smtplib.SMTPSenderRefused, smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError):
+        # The server refused the message, so it was not delivered.
+        raise
     except Exception as exc:
-        # After the message went out, a failure does not tell whether it arrived.
+        # Any other failure after the message went out does not tell whether it arrived.
         if stage == "send":
             raise AmbiguousDeliveryError("SMTP send outcome is unknown") from exc
         raise
@@ -182,8 +186,10 @@ def notify_on_exit(
         yield
         return
 
-    # Read .env now, so a problem with it shows when the run starts, not at its end.
-    _ensure_env()
+    # Check .env now, so a problem with it shows when the run starts, not at its end.
+    # Only check: it is loaded when the email is sent, so edits during the run count and
+    # the password does not sit in the environment of every child process meanwhile.
+    _load_dotenv()
     start = time.monotonic()
     host = socket.gethostname()
     failure = ""
