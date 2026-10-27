@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import smtplib
 import socket
+import sys
 from pathlib import Path
 
 import pytest
@@ -61,19 +62,25 @@ def _set_creds(monkeypatch: pytest.MonkeyPatch, password: str = "abcdefghijklmno
     monkeypatch.setenv("NOTIFY_GMAIL_APP_PASSWORD", password)
 
 
+def _write_env(path: Path, text: str) -> Path:
+    # explicit mode, so the tests do not depend on the umask (002 makes files group-writable)
+    path.write_text(text, encoding="utf-8")
+    path.chmod(0o600)
+    return path
+
+
 # --- .env -------------------------------------------------------------------
 
 
 def test_load_dotenv_parses_keys_quotes_and_comments(tmp_path: Path) -> None:
-    env = tmp_path / ".env"
-    env.write_text(
+    env = _write_env(
+        tmp_path / ".env",
         "# comment line\n"
         "NOTIFY_GMAIL_USER=sender@gmail.com\n"
         'NOTIFY_GMAIL_APP_PASSWORD="abcd efgh ijkl mnop"\n'
         "\n"
         "IGNORED_NO_EQUALS_LINE\n"
         "NOTIFY_TO='a@x.com, b@y.com'\n",
-        encoding="utf-8",
     )
     assert notify._load_dotenv(env) == {
         "NOTIFY_GMAIL_USER": "sender@gmail.com",
@@ -83,34 +90,37 @@ def test_load_dotenv_parses_keys_quotes_and_comments(tmp_path: Path) -> None:
 
 
 def test_load_dotenv_ignores_other_keys(tmp_path: Path) -> None:
-    env = tmp_path / ".env"
-    env.write_text(
+    env = _write_env(
+        tmp_path / ".env",
         "NOTIFY_GMAIL_USER=sender@gmail.com\nLD_PRELOAD=/tmp/evil.so\nPYTHONPATH=/tmp/evil\n",
-        encoding="utf-8",
     )
     assert notify._load_dotenv(env) == {"NOTIFY_GMAIL_USER": "sender@gmail.com"}
 
 
-@pytest.mark.parametrize("kind", ["mode", "symlink"])
-def test_load_dotenv_rejects_unsafe_file(tmp_path: Path, kind: str) -> None:
-    target = tmp_path / "real.env"
-    target.write_text("NOTIFY_GMAIL_USER=sender@gmail.com\n", encoding="utf-8")
-    if kind == "mode":
-        target.chmod(0o666)
-        env = target
-    else:
+@pytest.mark.parametrize("kind", ["group-writable", "world-writable", "symlink"])
+def test_load_dotenv_rejects_unsafe_file_with_a_warning(
+    tmp_path: Path, kind: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    target = _write_env(tmp_path / "real.env", "NOTIFY_GMAIL_USER=sender@gmail.com\n")
+    if kind == "symlink":
         env = tmp_path / ".env"
         env.symlink_to(target)
+    else:
+        target.chmod(0o620 if kind == "group-writable" else 0o602)
+        env = target
     assert notify._load_dotenv(env) == {}
+    assert "chmod 600" in capsys.readouterr().err
 
 
-def test_load_dotenv_missing_file_returns_empty(tmp_path: Path) -> None:
+def test_load_dotenv_missing_file_returns_empty(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     assert notify._load_dotenv(tmp_path / "nope.env") == {}
+    assert capsys.readouterr().err == ""
 
 
 def test_real_environment_wins_over_dotenv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    env = tmp_path / ".env"
-    env.write_text("NOTIFY_GMAIL_USER=dot@gmail.com\nNOTIFY_TO=dot@x.com\n", encoding="utf-8")
+    env = _write_env(tmp_path / ".env", "NOTIFY_GMAIL_USER=dot@gmail.com\nNOTIFY_TO=dot@x.com\n")
     monkeypatch.setattr(notify, "_dotenv_path", lambda: env)
     monkeypatch.setenv("NOTIFY_GMAIL_USER", "real@gmail.com")
     notify._ensure_env()
@@ -201,6 +211,25 @@ def test_notify_on_exit_failure_sends_traceback_and_reraises(
     body = msg.get_content()
     assert "Traceback" in body
     assert "RuntimeError: boom" in body
+
+
+@pytest.mark.parametrize(("code", "status"), [(0, "done"), (None, "done"), (2, "FAILED")])
+def test_notify_on_exit_sys_exit_zero_is_success(
+    fake_smtp: type, monkeypatch: pytest.MonkeyPatch, code: int | None, status: str
+) -> None:
+    _set_creds(monkeypatch)
+    with pytest.raises(SystemExit), notify.notify_on_exit("exp1"):
+        sys.exit(code)
+    (inst,) = fake_smtp.instances  # type: ignore[attr-defined]
+    assert inst.sent[0]["Subject"] == f"[{{ project_name_snake }}] {status}: exp1"
+
+
+def test_log_tail_keeps_the_last_lines(tmp_path: Path) -> None:
+    log = tmp_path / "run.log"
+    log.write_text("".join(f"line{i}\n" for i in range(1000)), encoding="utf-8")
+    assert notify._tail(log, 3) == "line997\nline998\nline999"
+    assert notify._tail(log, 0) == ""
+    assert notify._tail(tmp_path / "missing.log", 3) == ""
 
 
 def test_notify_on_exit_includes_log_tail(

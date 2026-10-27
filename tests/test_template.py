@@ -4,6 +4,7 @@ Each copy also runs the template's tasks (git init, uv sync, uv run pytest), so 
 successful copy means the generated project's own tests pass.
 """
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -139,3 +140,28 @@ def test_project_name_used_correctly(copie) -> None:
     assert (result.project_dir / "src" / "my_awesome_project" / "notify.py").is_file()
     assert 'name = "my_awesome_project"' in (result.project_dir / "pyproject.toml").read_text()
     assert "my_awesome_project" in (result.project_dir / "AGENTS.md").read_text()
+
+
+def test_git_branch_is_main(project: Path) -> None:
+    # CI runs on main; a plain `git init` would give master on default git settings
+    branch = subprocess.run(
+        ["git", "branch", "--show-current"],
+        check=True,
+        cwd=project,
+        capture_output=True,
+        text=True,
+    )
+    assert branch.stdout.strip() == "main"
+
+
+def test_generated_tests_pass_under_umask_002(project: Path) -> None:
+    # umask 002 (Ubuntu, many clusters) makes new files group-writable
+    check = subprocess.run(
+        ["uv", "run", "pytest", "-q"],
+        check=False,
+        cwd=project,
+        capture_output=True,
+        text=True,
+        preexec_fn=lambda: os.umask(0o002),
+    )
+    assert check.returncode == 0, check.stdout + check.stderr

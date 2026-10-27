@@ -1,7 +1,8 @@
 # Copier Template Configuration
 # https://copier.readthedocs.io/en/stable/configuring/
 
-_min_copier_version: "9.0.0"
+# 9.6.0 added _copier_operation, used by _tasks below
+_min_copier_version: "9.6.0"
 _subdirectory: template
 _templates_suffix: .jinja
 _answers_file: .copier-answers.yml
@@ -76,7 +77,13 @@ _skip_if_exists:
 # POST-GENERATION TASKS
 # ============================================
 
+# Only on the first copy: on `copier update` the project already has git and an
+# environment, and its own tests may need a GPU or fail for reasons of their own.
+# The branch is main, the branch the CI workflow runs on.
 _tasks:
-  - ["git", "init"]
-  - ["uv", "sync"]
-  - ["uv", "run", "pytest"]
+  - command: ["git", "init", "-b", "main"]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: ["uv", "sync"]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: ["uv", "run", "pytest"]
+    when: "{{ _copier_operation == 'copy' }}"

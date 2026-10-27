@@ -29,6 +29,7 @@ import stat
 import sys
 import time
 import traceback
+from collections import deque
 from collections.abc import Iterator
 from contextlib import contextmanager
 from email.message import EmailMessage
@@ -65,6 +66,12 @@ def _trusted(path: Path) -> bool:
 def _load_dotenv(path: Path | None = None) -> dict[str, str]:
     path = path if path is not None else _dotenv_path()
     if not _trusted(path):
+        if os.path.lexists(path):
+            print(
+                f"[notify] ignoring {path}: it must be a regular file that you own and that "
+                "group and others cannot write (chmod 600)",
+                file=sys.stderr,
+            )
         return {}
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
@@ -144,11 +151,14 @@ def _try_send(subject: str, body: str) -> None:
 
 
 def _tail(path: str | Path, lines: int) -> str:
+    if lines <= 0:
+        return ""
     try:
-        content = Path(path).read_text(encoding="utf-8", errors="replace").splitlines()
+        # deque keeps only the last lines, so a log of several GB needs no more memory
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            return "".join(deque(handle, maxlen=lines)).rstrip("\n")
     except OSError:
         return ""
-    return "\n".join(content[-lines:]) if lines > 0 else ""
 
 
 @contextmanager
@@ -171,26 +181,26 @@ def notify_on_exit(
 
     start = time.monotonic()
     host = socket.gethostname()
+    failure = ""
     try:
         yield
-    except BaseException:
-        status = "FAILED"
-        body = [
-            f"task: {task}",
-            f"host: {host}",
-            f"status: FAILED after {time.monotonic() - start:,.0f}s",
-            "",
-            traceback.format_exc(),
-        ]
+    except SystemExit as exc:
+        # sys.exit() or sys.exit(0) after the work is a clean finish
+        if exc.code not in (0, None):
+            failure = traceback.format_exc()
         raise
-    else:
-        status = "done"
-        body = [
-            f"task: {task}",
-            f"host: {host}",
-            f"status: completed in {time.monotonic() - start:,.0f}s",
-        ]
+    except BaseException:
+        failure = traceback.format_exc()
+        raise
     finally:
+        seconds = f"{time.monotonic() - start:,.0f}s"
+        body = [f"task: {task}", f"host: {host}"]
+        if failure:
+            status = "FAILED"
+            body += [f"status: FAILED after {seconds}", "", failure]
+        else:
+            status = "done"
+            body.append(f"status: completed in {seconds}")
         if log_file is not None:
             body += ["", f"--- tail of {log_file} (last {tail_lines} lines) ---"]
             body.append(_tail(log_file, tail_lines))
