@@ -27,6 +27,7 @@ def fake_smtp(monkeypatch: pytest.MonkeyPatch) -> type:
 
     class FakeSMTP:
         send_error: Exception | None = None
+        quit_error: Exception | None = None
 
         def __init__(self, host: str, port: int, timeout: float | None = None) -> None:
             self.host = host
@@ -35,11 +36,13 @@ def fake_smtp(monkeypatch: pytest.MonkeyPatch) -> type:
             self.sent: list[object] = []
             instances.append(self)
 
-        def __enter__(self) -> FakeSMTP:
-            return self
+        def quit(self) -> None:
+            self.ops.append(("quit",))
+            if self.quit_error is not None:
+                raise self.quit_error
 
-        def __exit__(self, *exc: object) -> bool:
-            return False
+        def close(self) -> None:
+            self.ops.append(("close",))
 
         def starttls(self, context: object | None = None) -> None:
             self.ops.append(("starttls",))
@@ -123,9 +126,11 @@ def test_real_environment_wins_over_dotenv(monkeypatch: pytest.MonkeyPatch, tmp_
     env = _write_env(tmp_path / ".env", "NOTIFY_GMAIL_USER=dot@gmail.com\nNOTIFY_TO=dot@x.com\n")
     monkeypatch.setattr(notify, "_dotenv_path", lambda: env)
     monkeypatch.setenv("NOTIFY_GMAIL_USER", "real@gmail.com")
-    notify._ensure_env()
-    assert os.environ["NOTIFY_GMAIL_USER"] == "real@gmail.com"
-    assert os.environ["NOTIFY_TO"] == "dot@x.com"
+    settings = notify._settings()
+    assert settings["NOTIFY_GMAIL_USER"] == "real@gmail.com"
+    assert settings["NOTIFY_TO"] == "dot@x.com"
+    # .env is never copied into the environment
+    assert "NOTIFY_TO" not in os.environ
 
 
 # --- configured / recipients ------------------------------------------------
@@ -139,13 +144,13 @@ def test_configured_needs_user_and_password(monkeypatch: pytest.MonkeyPatch) -> 
 
 def test_recipients_default_to_sender(monkeypatch: pytest.MonkeyPatch) -> None:
     _set_creds(monkeypatch)
-    assert notify._recipients() == ["sender@gmail.com"]
+    assert notify._recipients(notify._settings()) == ["sender@gmail.com"]
 
 
 def test_recipients_split_on_commas(monkeypatch: pytest.MonkeyPatch) -> None:
     _set_creds(monkeypatch)
     monkeypatch.setenv("NOTIFY_TO", "a@x.com, b@y.com ,c@z.com")
-    assert notify._recipients() == ["a@x.com", "b@y.com", "c@z.com"]
+    assert notify._recipients(notify._settings()) == ["a@x.com", "b@y.com", "c@z.com"]
 
 
 # --- send_email -------------------------------------------------------------
@@ -191,6 +196,33 @@ def test_send_email_refused_by_the_server_is_a_plain_failure(
     fake_smtp.send_error = refused  # type: ignore[attr-defined]
     with pytest.raises(smtplib.SMTPRecipientsRefused):
         notify.send_email("s", "b")
+
+
+def test_send_email_ends_the_session_with_quit(
+    fake_smtp: type, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _set_creds(monkeypatch)
+    notify.send_email("s", "b")
+    (inst,) = fake_smtp.instances  # type: ignore[attr-defined]
+    assert inst.ops[-1] == ("quit",)
+
+
+@pytest.mark.parametrize("refused", [False, True])
+def test_quit_error_does_not_change_the_result(
+    fake_smtp: type, monkeypatch: pytest.MonkeyPatch, refused: bool
+) -> None:
+    _set_creds(monkeypatch)
+    bad_quit = smtplib.SMTPResponseException(500, b"bad quit")
+    fake_smtp.quit_error = bad_quit  # type: ignore[attr-defined]
+    if refused:
+        refusal = smtplib.SMTPDataError(554, b"rejected")
+        fake_smtp.send_error = refusal  # type: ignore[attr-defined]
+        with pytest.raises(smtplib.SMTPDataError):
+            notify.send_email("s", "b")
+    else:
+        notify.send_email("s", "b")  # delivered; the QUIT error is ignored
+    (inst,) = fake_smtp.instances  # type: ignore[attr-defined]
+    assert inst.ops[-2:] == [("quit",), ("close",)]
 
 
 # --- notify_on_exit ---------------------------------------------------------
@@ -328,6 +360,24 @@ def test_dotenv_is_read_when_the_email_is_sent(
         )
     (inst,) = fake_smtp.instances  # type: ignore[attr-defined]
     assert ("login", "sender@gmail.com", "newpassword") in inst.ops
+
+
+def test_later_runs_in_the_same_process_see_dotenv_edits(
+    fake_smtp: type, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # e.g. `for cfg in sweep: with notify_on_exit(cfg): ...`
+    text = "NOTIFY_GMAIL_USER=sender@gmail.com\nNOTIFY_GMAIL_APP_PASSWORD={}\n"
+    env = _write_env(tmp_path / ".env", text.format("pw1"))
+    monkeypatch.setattr(notify, "_dotenv_path", lambda: env)
+    with notify.notify_on_exit("first"):
+        pass
+    env.write_text(text.format("pw2"), encoding="utf-8")
+    with notify.notify_on_exit("second"):
+        pass
+    instances = fake_smtp.instances  # type: ignore[attr-defined]
+    logins = [op[2] for inst in instances for op in inst.ops if op[0] == "login"]
+    assert logins == ["pw1", "pw2"]
+    assert "NOTIFY_GMAIL_APP_PASSWORD" not in os.environ
 
 
 def test_notify_on_exit_disabled_sends_nothing(

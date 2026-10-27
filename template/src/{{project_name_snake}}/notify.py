@@ -9,7 +9,8 @@ wrapped block finishes or raises::
         main()
 
 Credentials come from the environment or from a gitignored ``.env`` at the repo
-root (see ``.env.example``); real environment variables win over ``.env``:
+root (see ``.env.example``); real environment variables win over ``.env``, and
+``.env`` is never copied into ``os.environ``, so child processes do not see it:
 
     NOTIFY_GMAIL_USER=<sender>@gmail.com
     NOTIFY_GMAIL_APP_PASSWORD=<16-character Gmail app password>
@@ -93,33 +94,36 @@ def _load_dotenv(path: Path | None = None) -> dict[str, str]:
     return values
 
 
-def _ensure_env() -> None:
-    for key, value in _load_dotenv().items():
-        os.environ.setdefault(key, value)
+def _settings() -> dict[str, str]:
+    # Read on every use, so edits to .env during a run count. Real environment
+    # variables win; nothing is written back to os.environ.
+    values = _load_dotenv()
+    values.update({key: os.environ[key] for key in DOTENV_KEYS if key in os.environ})
+    return values
 
 
 def configured() -> bool:
-    _ensure_env()
-    return bool(os.environ.get("NOTIFY_GMAIL_USER")) and bool(
-        os.environ.get("NOTIFY_GMAIL_APP_PASSWORD")
+    settings = _settings()
+    return bool(settings.get("NOTIFY_GMAIL_USER")) and bool(
+        settings.get("NOTIFY_GMAIL_APP_PASSWORD")
     )
 
 
-def _recipients() -> list[str]:
-    raw = os.environ.get("NOTIFY_TO") or os.environ.get("NOTIFY_GMAIL_USER", "")
+def _recipients(settings: dict[str, str]) -> list[str]:
+    raw = settings.get("NOTIFY_TO") or settings.get("NOTIFY_GMAIL_USER", "")
     return [addr.strip() for addr in raw.split(",") if addr.strip()]
 
 
 def send_email(subject: str, body: str, *, to: list[str] | None = None) -> None:
     """Send a plain-text email through Gmail SMTP; raise on any failure."""
-    _ensure_env()
-    user = os.environ.get("NOTIFY_GMAIL_USER", "")
-    password = os.environ.get("NOTIFY_GMAIL_APP_PASSWORD", "").replace(" ", "")
+    settings = _settings()
+    user = settings.get("NOTIFY_GMAIL_USER", "")
+    password = settings.get("NOTIFY_GMAIL_APP_PASSWORD", "").replace(" ", "")
     if not user or not password:
         raise RuntimeError(
             "notify is not configured: set NOTIFY_GMAIL_USER and NOTIFY_GMAIL_APP_PASSWORD"
         )
-    recipients = to if to is not None else _recipients()
+    recipients = to if to is not None else _recipients(settings)
     if not recipients:
         raise RuntimeError("notify has no recipients (NOTIFY_TO is empty)")
 
@@ -129,21 +133,25 @@ def send_email(subject: str, body: str, *, to: list[str] | None = None) -> None:
     msg["Subject"] = subject
     msg.set_content(body)
 
-    stage = "before-send"
+    server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=SMTP_TIMEOUT)
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=SMTP_TIMEOUT) as server:
-            server.starttls(context=ssl.create_default_context())
-            server.login(user, password)
-            stage = "send"
+        server.starttls(context=ssl.create_default_context())
+        server.login(user, password)
+        try:
             server.send_message(msg)
-    except (smtplib.SMTPSenderRefused, smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError):
-        # The server refused the message, so it was not delivered.
-        raise
-    except Exception as exc:
-        # Any other failure after the message went out does not tell whether it arrived.
-        if stage == "send":
+        except (smtplib.SMTPSenderRefused, smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError):
+            # The server refused the message, so it was not delivered.
+            raise
+        except Exception as exc:
+            # The connection failed while sending: the message may or may not have arrived.
             raise AmbiguousDeliveryError("SMTP send outcome is unknown") from exc
-        raise
+    finally:
+        # QUIT only ends the session. Its errors say nothing about the message, so they
+        # must not replace the result above (a `with` block would let them).
+        try:
+            server.quit()
+        except Exception:
+            server.close()
 
 
 def _try_send(subject: str, body: str) -> None:
@@ -187,8 +195,7 @@ def notify_on_exit(
         return
 
     # Check .env now, so a problem with it shows when the run starts, not at its end.
-    # Only check: it is loaded when the email is sent, so edits during the run count and
-    # the password does not sit in the environment of every child process meanwhile.
+    # The email reads it again when it is sent.
     _load_dotenv()
     start = time.monotonic()
     host = socket.gethostname()
