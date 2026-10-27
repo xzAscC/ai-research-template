@@ -41,11 +41,9 @@ This preserves your customizations while applying template updates. `AGENTS.loca
 | `data/`, `logs/`, `results/`, `figs/`, `checkpoints/`, `notebooks/` | Inputs and outputs. Only their `.gitkeep` is in git | Good Research Code Handbook; the Prefix repo |
 | `SPEC.md` | The research question, and for each experiment what it compares, its metric, its output and its config | |
 | `ARCHITECTURE.md` | The pipeline from config to figure, the components and the folders | |
-| `AGENTS.md` | 13 short rules for coding agents: TDD, fixed folders, incremental logs, checkpoint and resume, large files on scratch, draft PRs | The AGENTS.md of Prefix and PostDyn; kept short because long context files cost more and help little (see Sources) |
+| `AGENTS.md` | 13 short rules for coding agents: TDD, fixed folders, incremental logs, checkpoint and resume, large files on scratch, emails only from the agent through the agent-notify skill, draft PRs | The AGENTS.md of Prefix and PostDyn; kept short because long context files cost more and help little (see Sources) |
 | `AGENTS.local.md`, `CLAUDE.local.md` | Private facts about machines, storage and credentials, and a pointer that makes Claude Code read both AGENTS files. Gitignored | Prefix and PostDyn |
 | `REVIEW.md` | Rules for the pr-review skill: test command, risk paths, what counts as a failure | `REVIEW.template.md` of the pr-review skill |
-| `.env.example` | The environment variables of `notify.py`; copy it to `.env` | lightning-hydra-template |
-| `src/<project>/notify.py` | `notify_on_exit`: one email when a run finishes or fails | The Gmail notify of Prefix, without its state files for multi-phase jobs |
 | `.github/workflows/ci.yml` | `ruff check` and `pytest` | |
 
 ## Sources
@@ -53,7 +51,7 @@ This preserves your customizations while applying template updates. `AGENTS.loca
 - Papers with Code, [Tips for releasing research code in Machine Learning](https://github.com/paperswithcode/releasing-research-code): the ML Code Completeness Checklist and its README template.
 - NeurIPS, [Paper Checklist](https://neurips.cc/public/guides/PaperChecklist): items 4–8 (reproducibility, open code, settings, error bars, compute), 12 (licenses) and 13 (new assets).
 - P. Mineault, [The Good Research Code Handbook](https://goodresearch.dev/setup.html): one repository per paper, the `data docs results scripts src tests` layout, code installed as a package.
-- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template): experiment configs, per-run logs, `.env.example`. Its Lightning and Hydra stack is not adopted.
+- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template): experiment configs, per-run logs. Its Lightning and Hydra stack is not adopted.
 - [Cookiecutter Data Science v2](https://cookiecutter-data-science.drivendata.org/): considered and not adopted, because it keeps data inside the repository.
 - "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (ETH Zurich and LogicStar.ai, 2026; [summary](https://the-decoder.com/context-files-for-coding-agents-often-dont-help-and-may-even-hurt-performance/)): LLM-generated context files lowered success rates in most settings; short developer-written ones helped a little.
 
@@ -78,9 +76,9 @@ Valid examples: `my_project`, `ai_research_2024`, `data_processor`
 
 ## Post-Generation Tasks
 
-After project generation, the following tasks run automatically:
+After `copier copy` (not after `copier update`), the following tasks run automatically:
 
-1. **Git initialization** — `git init`
+1. **Git initialization** — `git init`, on branch `main`
 2. **Dependency sync** — `uv sync`
 3. **Test verification** — `uv run pytest`
 
@@ -88,7 +86,7 @@ These tasks require the `--trust` flag since they execute code on your system.
 
 ## Requirements
 
-- Linux or macOS (the tasks run in a POSIX shell, and `notify.py` checks file owners)
+- Linux or macOS (the tasks run in a POSIX shell)
 - [Copier](https://copier.readthedocs.io/) >= 9.6.0
 - [uv](https://docs.astral.sh/uv/) (for post-generation tasks)
 - Git

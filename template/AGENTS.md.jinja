@@ -12,6 +12,6 @@ Research code for {{ project_display_name }}. SPEC.md says what the project stud
 8. Log incrementally: tee every print to stdout and to `logs/<experiment>/run.log`, and save partial results to `results/<experiment>/` after each completed condition.
 9. Support checkpoint and resume: after each unit of work (example, config, condition), save progress to disk; on restart, skip finished units. A job can be preempted at any time.
 10. Large intermediates that can be recomputed (cached activations, model checkpoints) go to the scratch path in `AGENTS.local.md`, not into the repo.
-11. Wrap each long run in `notify_on_exit` from `src/{{ project_name_snake }}/notify.py`: one email when it finishes or fails, no progress emails.
+11. Experiment code sends no email. For each long run, follow the agent-notify skill: register the job, and email me only when an experiment's results are complete or a decision has waited 30 minutes.
 12. Before starting work, check for an open PR for it and continue on its branch; otherwise start a new branch. Open PRs as drafts and keep them short. I merge.
 13. Keep code clean and concise.

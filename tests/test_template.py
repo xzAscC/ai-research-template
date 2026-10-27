@@ -4,7 +4,6 @@ Each copy also runs the template's tasks (git init, uv sync, uv run pytest), so 
 successful copy means the generated project's own tests pass.
 """
 
-import os
 import subprocess
 from pathlib import Path
 
@@ -52,12 +51,10 @@ def test_expected_files_exist(project: Path) -> None:
         "pyproject.toml",
         ".python-version",
         ".gitignore",
-        ".env.example",
         ".copier-answers.yml",
         ".github/workflows/ci.yml",
         "src/test_project/__init__.py",
-        "src/test_project/notify.py",
-        "tests/test_notify.py",
+        "tests/test_package.py",
     ]:
         assert (project / name).is_file(), name
 
@@ -83,6 +80,10 @@ def test_removed_files_are_gone(project: Path) -> None:
         ".github/ISSUE_TEMPLATE",
         "test_project",
         "src/test_project/hello.py",
+        # emails come from the agent (agent-notify skill), not from experiment code
+        "src/test_project/notify.py",
+        "tests/test_notify.py",
+        ".env.example",
     ]:
         assert not (project / name).exists(), name
 
@@ -121,7 +122,7 @@ def test_private_files_and_outputs_are_ignored(project: Path) -> None:
     ]:
         check = subprocess.run(["git", "check-ignore", "-q", path], check=False, cwd=project)
         assert check.returncode == 0, f"{path} is not ignored"
-    for path in ["AGENTS.md", ".env.example", "results/.gitkeep", "configs/exp1.yaml"]:
+    for path in ["AGENTS.md", "results/.gitkeep", "configs/exp1.yaml"]:
         check = subprocess.run(["git", "check-ignore", "-q", path], check=False, cwd=project)
         assert check.returncode == 1, f"{path} is ignored"
 
@@ -137,9 +138,9 @@ def test_project_name_used_correctly(copie) -> None:
     result = copie.copy(extra_answers={**ANSWERS, "project_name": "my_awesome_project"})
     assert result.exit_code == 0, result.exception
 
-    assert (result.project_dir / "src" / "my_awesome_project" / "notify.py").is_file()
+    assert (result.project_dir / "src" / "my_awesome_project" / "__init__.py").is_file()
     assert 'name = "my_awesome_project"' in (result.project_dir / "pyproject.toml").read_text()
-    assert "my_awesome_project" in (result.project_dir / "AGENTS.md").read_text()
+    assert "src/my_awesome_project/" in (result.project_dir / "ARCHITECTURE.md").read_text()
 
 
 def test_git_branch_is_main(project: Path) -> None:
@@ -152,16 +153,3 @@ def test_git_branch_is_main(project: Path) -> None:
         text=True,
     )
     assert branch.stdout.strip() == "main"
-
-
-def test_generated_tests_pass_under_umask_002(project: Path) -> None:
-    # umask 002 (Ubuntu, many clusters) makes new files group-writable
-    check = subprocess.run(
-        ["uv", "run", "pytest", "-q"],
-        check=False,
-        cwd=project,
-        capture_output=True,
-        text=True,
-        preexec_fn=lambda: os.umask(0o002),
-    )
-    assert check.returncode == 0, check.stdout + check.stderr

@@ -12,6 +12,6 @@
 
 ## Credentials
 
-<!-- Environment variable names only, e.g. NOTIFY_GMAIL_USER; the values live in .env. -->
+<!-- Environment variable names only, e.g. HF_TOKEN; the values live in .env. -->
 
 ## Private instructions

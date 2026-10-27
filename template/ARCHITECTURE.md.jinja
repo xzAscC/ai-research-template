@@ -20,7 +20,6 @@ configs/<experiment>.yaml
 
 | Component | Responsibility | Key Files | Dependencies |
 | --- | --- | --- | --- |
-| notify | Email when a run finishes or fails | `src/{{ project_name_snake }}/notify.py` | Gmail SMTP |
 | [Name] | [What it does] | [Files] | [Deps] |
 
 ## Technology Stack
@@ -37,7 +36,7 @@ configs/<experiment>.yaml
 
 ```
 .
-├── src/{{ project_name_snake }}/   # Importable code: models, metrics, data loading, notify.py
+├── src/{{ project_name_snake }}/   # Importable code: models, metrics, data loading
 ├── scripts/            # Entry points: run_<experiment>.py, plot_<experiment>.py, job scripts
 ├── configs/            # One YAML file per experiment
 ├── tests/              # CPU tests; tests marked gpu need a GPU, weights or the network
@@ -51,8 +50,7 @@ configs/<experiment>.yaml
 ├── SPEC.md             # Research question and experiments
 ├── AGENTS.md           # Rules for coding agents
 ├── AGENTS.local.md     # Private machine and account facts (not in git)
-├── REVIEW.md           # Rules for the pr-review skill
-└── .env.example        # Environment variables; copy to .env (not in git)
+└── REVIEW.md           # Rules for the pr-review skill
 ```
 
 ## Key Design Decisions
