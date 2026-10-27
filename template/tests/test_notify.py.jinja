@@ -270,6 +270,19 @@ def test_notify_on_exit_send_failure_never_stops_the_run(
         pass
 
 
+def test_notify_on_exit_warns_about_unsafe_dotenv_when_the_run_starts(
+    fake_smtp: type,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    env = _write_env(tmp_path / ".env", "NOTIFY_GMAIL_USER=sender@gmail.com\n")
+    env.chmod(0o664)  # what `cp .env.example .env` gives under umask 002
+    monkeypatch.setattr(notify, "_dotenv_path", lambda: env)
+    with notify.notify_on_exit("exp"):
+        assert "chmod 600" in capsys.readouterr().err
+
+
 def test_notify_on_exit_disabled_sends_nothing(
     fake_smtp: type, monkeypatch: pytest.MonkeyPatch
 ) -> None:

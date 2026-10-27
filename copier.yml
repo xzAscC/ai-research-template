@@ -77,11 +77,13 @@ _skip_if_exists:
 # POST-GENERATION TASKS
 # ============================================
 
-# Only on the first copy: on `copier update` the project already has git and an
+# On copy and recopy, not on update: an updated project already has git and an
 # environment, and its own tests may need a GPU or fail for reasons of their own.
-# The branch is main, the branch the CI workflow runs on.
+# A new repository starts on main, the branch the CI workflow runs on. symbolic-ref
+# instead of `git init -b` (git >= 2.28), and only before the first commit, so a
+# recopy never moves an existing repository to another branch.
 _tasks:
-  - command: ["git", "init", "-b", "main"]
+  - command: "git init -q && { git rev-parse -q --verify HEAD >/dev/null || git symbolic-ref HEAD refs/heads/main; }"
     when: "{{ _copier_operation == 'copy' }}"
   - command: ["uv", "sync"]
     when: "{{ _copier_operation == 'copy' }}"

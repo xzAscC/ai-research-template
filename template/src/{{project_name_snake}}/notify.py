@@ -15,6 +15,9 @@ root (see ``.env.example``); real environment variables win over ``.env``:
     NOTIFY_GMAIL_APP_PASSWORD=<16-character Gmail app password>
     NOTIFY_TO=<comma-separated recipients; default: the sender>
 
+``.env`` must be a file you own that group and others cannot write
+(``chmod 600 .env``); otherwise it is ignored with a warning when the run starts.
+
 A failed notification (missing credentials, SMTP down, no network) never stops
 the run; it prints a warning to stderr.
 """
@@ -179,6 +182,8 @@ def notify_on_exit(
         yield
         return
 
+    # Read .env now, so a problem with it shows when the run starts, not at its end.
+    _ensure_env()
     start = time.monotonic()
     host = socket.gethostname()
     failure = ""
