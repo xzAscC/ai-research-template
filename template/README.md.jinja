@@ -1,0 +1,59 @@
+# {{ project_display_name }}
+
+{{ project_description }}
+
+<!-- When the paper is public: "Official code for [Paper Title](arXiv link)." A figure of the main result can go here. -->
+
+## Requirements
+
+Python 3.13+ and [uv](https://docs.astral.sh/uv/).
+
+```bash
+uv sync
+uv run pytest
+```
+
+<!-- GPUs and memory needed, datasets to download, environment variables. -->
+
+## Reproducing the paper
+
+Each result in the paper comes from one command.
+
+| Result | Command | Config | Output |
+| --- | --- | --- | --- |
+| Figure 1 | `uv run python scripts/run_<experiment>.py` | `configs/<experiment>.yaml` | `results/<experiment>/` |
+| Figure 1 | `uv run python scripts/plot_<experiment>.py` | | `figs/<experiment>.pdf` |
+
+### Training
+
+<!-- Commands that train the models in the paper, with their hyperparameters. Delete if the paper trains nothing. -->
+
+### Evaluation
+
+<!-- Commands that evaluate the models and give the numbers under Results. -->
+
+## Pre-trained models
+
+<!-- Links to the released checkpoints and how they were trained, or "None". -->
+
+## Results
+
+<!-- The paper's main table. If the main result is a figure, the figure and the command that draws it. -->
+
+## Compute
+
+<!-- Per experiment: GPU type and count, memory, time per run. Total GPU-hours, including runs not in the paper. -->
+
+## Models, data and licenses
+
+| Asset | Version | Source | License |
+| --- | --- | --- | --- |
+| Model or dataset | Revision | URL | License |
+
+## Layout
+
+See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

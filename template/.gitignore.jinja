@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Private: never commit
+.env
+AGENTS.local.md
+CLAUDE.local.md
+
+# Experiment inputs and outputs stay out of git; only the folders are kept
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
+results/*
+!results/.gitkeep
+figs/*
+!figs/.gitkeep
+checkpoints/*
+!checkpoints/.gitkeep
+notebooks/*
+!notebooks/.gitkeep

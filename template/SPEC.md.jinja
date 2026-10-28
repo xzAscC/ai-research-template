@@ -1,0 +1,58 @@
+# SPEC.md
+
+What this project studies and what its code must do. AGENTS.md defines HOW to work; ARCHITECTURE.md defines WHERE the code lives.
+
+## 1) Research Question
+
+<!-- One or two sentences. Define every quantity in terms of the model input. -->
+
+## 2) Experiments
+
+Fix what an experiment compares, its metric and its output before writing its code.
+
+| Experiment | Compares | Metric | Output | Config | In the paper |
+| --- | --- | --- | --- | --- | --- |
+| exp1 | Method vs. baseline | Accuracy | `results/exp1/`, `figs/exp1.pdf` | `configs/exp1.yaml` | Figure 1 |
+
+## 3) Tech Stack
+
+- Python 3.13+
+- Package manager: `uv`
+- Linting: `ruff`
+- Testing: `pytest`
+
+## 4) Three-Tier Boundaries
+
+### ✅ Always Do
+
+Actions the agent takes without asking:
+
+- Run tests before commits
+- Write tests for new functionality, before the code
+- Follow naming conventions (snake_case for functions/vars, PascalCase for classes)
+- Add type hints to all function parameters and returns
+- Update documentation when changing code behavior
+- Save partial results and support resume (AGENTS.md rules 8 and 9)
+
+### ⚠️ Ask First
+
+Actions requiring human approval:
+
+- Changing what an experiment compares, its metric or its output (Section 2)
+- Adding new dependencies
+- Modifying `pyproject.toml` configuration
+- Changing CI configuration (`.github/workflows/`)
+- Creating new top-level directories
+- Starting a GPU job on a cluster
+
+### 🚫 Never Do
+
+Hard stops that require escalation:
+
+- Commit secrets, API keys, credentials, `.env` or `AGENTS.local.md`
+- Commit data, results, logs or checkpoints
+- Edit files in `.git/` or `__pycache__/`
+- Remove tests without explicit approval
+- Push to `main` or `master` branch directly
+- Modify `.python-version` without approval
+- Delete documentation files

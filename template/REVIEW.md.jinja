@@ -1,0 +1,34 @@
+# Review rules
+
+<!-- Read by the pr-review skill. Keep it short; delete what you do not need. -->
+
+Kind: research
+
+## Tests
+
+Command: `uv run pytest -q`
+Not runnable locally: tests marked `gpu` (`uv run pytest -m gpu`; on a cluster only when asked)
+
+## Risk paths
+
+High: `src/{{ project_name_snake }}/`, `configs/`, `scripts/run_*.py`
+Medium: `scripts/plot_*.py`
+Low: `README.md`, `SPEC.md`, `ARCHITECTURE.md`, `tests/`
+
+## Screenshots and numbers
+
+Numbers: <!-- the smallest config that reaches the changed code, e.g. `uv run python scripts/run_<experiment>.py --limit 2` -->
+Figures: `uv run python scripts/plot_<experiment>.py`, compare `figs/<experiment>.pdf`
+
+## What counts as a failure here
+
+- Reported numbers change without a stated reason
+- A stopped run cannot resume
+
+## Ignore
+
+`data/`, `logs/`, `results/`, `figs/`, `checkpoints/`, `notebooks/` (not in git)
+
+## Past misses
+
+<!-- date, PR, what broke, which step should have caught it -->

@@ -1,0 +1,17 @@
+# AGENTS
+
+Research code for {{ project_display_name }}. SPEC.md says what the project studies, ARCHITECTURE.md where the code lives, REVIEW.md how changes are reviewed.
+
+1. If `AGENTS.local.md` exists, read it at the start of every session and follow it (machines, storage paths, credentials). It is gitignored: never copy its contents into tracked files, commits or PRs.
+2. If you are unsure, ask me first. If you cannot ask me, search the documentation. Do not guess.
+3. Before writing experiment code, agree with me on what the experiment compares, its metric and its output, and write them into SPEC.md.
+4. Use TDD: write tests before source code. Tests run on a CPU without model weights; mark a test that needs a GPU, weights or the network with `@pytest.mark.gpu`.
+5. Use only the folders in ARCHITECTURE.md and put each file in its folder. Ask before creating a new folder.
+6. Use uv: `uv sync`, `uv run pytest`, `uv run ruff check`.
+7. One experiment is one config in `configs/` and one entry point in `scripts/`. Plot scripts read `results/` and save figures to `figs/` as PDF, not PNG.
+8. Log incrementally: tee every print to stdout and to `logs/<experiment>/run.log`, and save partial results to `results/<experiment>/` after each completed condition.
+9. Support checkpoint and resume: after each unit of work (example, config, condition), save progress to disk; on restart, skip finished units. A job can be preempted at any time.
+10. Large intermediates that can be recomputed (cached activations, model checkpoints) go to the scratch path in `AGENTS.local.md`, not into the repo.
+11. Experiment code sends no email. For each long run, follow the agent-notify skill: register the job, and email me only when an experiment's results are complete or a decision has waited 30 minutes.
+12. Before starting work, check for an open PR for it and continue on its branch; otherwise start a new branch. Open PRs as drafts and keep them short. I merge.
+13. Keep code clean and concise.

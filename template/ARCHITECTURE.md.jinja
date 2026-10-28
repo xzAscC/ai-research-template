@@ -1,0 +1,70 @@
+# Architecture
+
+This document describes how the code of this project is organized. SPEC.md says what it studies.
+
+## System Overview
+
+[Describe the pipeline: what goes in, what each stage computes, what comes out.]
+
+An experiment runs from its config to its figure:
+
+```
+configs/<experiment>.yaml
+  -> scripts/run_<experiment>.py    (imports src/{{ project_name_snake }}/)
+  -> results/<experiment>/, logs/<experiment>/run.log
+  -> scripts/plot_<experiment>.py
+  -> figs/<experiment>.pdf
+```
+
+## Core Components
+
+| Component | Responsibility | Key Files | Dependencies |
+| --- | --- | --- | --- |
+| [Name] | [What it does] | [Files] | [Deps] |
+
+## Technology Stack
+
+| Category | Tool | Version |
+| --- | --- | --- |
+| Language | Python | 3.13+ |
+| Package Manager | uv | latest |
+| Linting | ruff | 0.12+ |
+| Testing | pytest | 8.0+ |
+| CI | GitHub Actions | N/A |
+
+## Directory Structure
+
+```
+.
+├── src/{{ project_name_snake }}/   # Importable code: models, metrics, data loading
+├── scripts/            # Entry points: run_<experiment>.py, plot_<experiment>.py, job scripts
+├── configs/            # One YAML file per experiment
+├── tests/              # CPU tests; tests marked gpu need a GPU, weights or the network
+├── data/               # Datasets and other inputs (not in git)
+├── logs/               # <experiment>/run.log, log files only (not in git)
+├── results/            # <experiment>/ partial and final results, JSON/JSONL (not in git)
+├── figs/               # Figures as PDF (not in git)
+├── checkpoints/        # Model checkpoints, or symlinks inside it to scratch (not in git)
+├── notebooks/          # Exploration notebooks (not in git)
+├── README.md           # How to install and reproduce the paper
+├── SPEC.md             # Research question and experiments
+├── AGENTS.md           # Rules for coding agents
+├── AGENTS.local.md     # Private machine and account facts (not in git)
+└── REVIEW.md           # Rules for the pr-review skill
+```
+
+## Key Design Decisions
+
+### ADR-001: [Decision Title]
+
+- **Context**: [Why this decision was needed]
+- **Decision**: [What was decided]
+- **Consequences**: [Impact of this decision]
+
+## How to Update This Document
+
+Update this file when:
+- Adding new major components
+- Adding or renaming a folder
+- Changing technology stack
+- Making significant architectural decisions
